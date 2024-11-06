@@ -2,9 +2,15 @@
 
 import React from 'react';
 import SignIn from './signIn/page';
+import UserProfileHistoryPage from './history/page';
 
 const Page = () => {
-  return <SignIn />;
+  return (
+    <div>
+      <SignIn />;
+      <UserProfileHistoryPage />;
+    </div>
+  )
 };
 
 export default Page;
