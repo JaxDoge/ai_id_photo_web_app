@@ -195,3 +195,87 @@
 .addEmailButton:hover {
     color: #2563eb;
 }
+
+.changeEmailButton {
+    background-color: #eaf3ff; /* Light blue background */
+    color: #3b82f6; /* Blue text color */
+    padding: 10px 20px;
+    border-radius: 8px; /* Rounded corners */
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    font-size: 14px; /* Adjust font size if needed */
+    transition: background-color 0.3s;
+}
+
+.changeEmailButton:hover {
+    background-color: #dbeafe; /* Slightly darker blue on hover */
+    color: #2563eb; /* Darker blue text on hover */
+}
+
+
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal h2 {
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.inputField {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+}
+
+.saveButton {
+    background-color: #3b82f6;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.saveButton:hover {
+    background-color: #2563eb;
+}
+
+.cancelButton {
+    background-color: #e5e7eb;
+    color: #333;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-left: 8px;
+}
+
+.cancelButton:hover {
+    background-color: #d1d5db;
+}

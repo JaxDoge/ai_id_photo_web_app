@@ -8,6 +8,9 @@ import "./profilePage.css";
 const ProfileCard = () => {
     const router = useRouter();
     const [currentDate, setCurrentDate] = useState("");
+    const [isEditing, setIsEditing] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newEmail, setNewEmail] = useState("");
 
     useEffect(() => {
         const today = new Date();
@@ -16,10 +19,18 @@ const ProfileCard = () => {
         setCurrentDate(formattedDate);
     }, []);
 
-    const [isEditing, setIsEditing] = useState(false);
-
     const handleEditClick = () => {
         setIsEditing(!isEditing);
+    };
+
+    const handleChangeEmailClick = () => {
+        setIsModalOpen(true); // Open the modal
+    };
+
+    const handleSaveEmail = () => {
+        console.log("New email added:", newEmail);
+        setIsModalOpen(false); // Close the modal after saving
+        setNewEmail(""); // Clear the input field
     };
 
     return (
@@ -36,18 +47,15 @@ const ProfileCard = () => {
 
             {/* Main Content */}
             <main className="mainContent">
-                {/* Top Section */}
-                <div className="topSection">
-                    <h1 className="welcomeMessage">Welcome, Amanda</h1>
-                    <p className="date">{currentDate}</p>
-                </div>
-
                 {/* Middle Section */}
                 <div className="middleSection">
                     {/* Gradient Color Bar */}
                     <div className="colorBar"></div>
 
                     <div className="contentBody">
+                        <h1 className="welcomeMessage">Welcome, Amanda</h1>
+                        <p className="date">{currentDate}</p>
+
                         {/* Profile Info Section */}
                         <div className="profileInfo">
                             <img
@@ -116,10 +124,28 @@ const ProfileCard = () => {
                                 <span className="emailText">amandarawles@gmail.com</span>
                                 <span className="emailTimestamp">1 month ago</span>
                             </div>
-                            <button className="addEmailButton">+ Add Email Address</button>
+                            <button className="changeEmailButton" onClick={handleChangeEmailClick}>Change Email Address</button>
                         </div>
                     </div>
                 </div>
+
+                {/* Change Email Modal */}
+                {isModalOpen && (
+                    <div className="modalOverlay">
+                        <div className="modal">
+                            <h2>Change Email</h2>
+                            <input
+                                type="email"
+                                value={newEmail}
+                                onChange={(e) => setNewEmail(e.target.value)}
+                                placeholder="Enter your new email address"
+                                className="inputField"
+                            />
+                            <button onClick={handleSaveEmail} className="saveButton">Save</button>
+                            <button onClick={() => setIsModalOpen(false)} className="cancelButton">Cancel</button>
+                        </div>
+                    </div>
+                )}
             </main>
         </div>
     );
