@@ -37,11 +37,15 @@ const ProfileCard = () => {
         <div className="profileContainer">
             {/* Left Sidebar */}
             <aside className="leftSidebar">
+                <div style={{marginTop: 100}}></div>
+                <button className="icon" onClick={() => router.push('/generator')}>
+                    <i className="fas fa-house" />
+                </button>
                 <button className="icon active" onClick={() => router.push('/profile')}>
-                    <img src="/images/icons/icon1.png" alt="Profile" />
+                    <i className="fa-solid fa-grip" />
                 </button>
                 <button className="icon" onClick={() => router.push('/history')}>
-                    <img src="/images/icons/icon2.png" alt="History" />
+                    <i className="fas fa-file-alt" />
                 </button>
             </aside>
 
