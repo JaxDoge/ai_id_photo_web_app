@@ -1,11 +1,43 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signUpUser } from "../apicalls/users";
 import styles from "./SignUp.module.css";
 
 const SignUp = () => {
   const router = useRouter();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    try {
+      const newUserData = await signUpUser(
+        firstName,
+        lastName,
+        email,
+        password
+      );
+
+      console.log("Account created successfully:", newUserData);
+      router.push("/signIn"); // Redirect to login page after signup
+    } catch (err) {
+      setError("Error creating account. Please try again.");
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -26,7 +58,7 @@ const SignUp = () => {
             Let’s get you all set up so you can access your personal account.
           </p>
 
-          <form>
+          <form onSubmit={handleSignUp}>
             <div className={styles.inputGroup}>
               <div>
                 <label className={styles.inputLabel}>First Name</label>
@@ -34,6 +66,8 @@ const SignUp = () => {
                   type="text"
                   placeholder="First Name"
                   className={styles.inputField}
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                 />
               </div>
 
@@ -43,6 +77,8 @@ const SignUp = () => {
                   type="text"
                   placeholder="Last Name"
                   className={styles.inputField}
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                 />
               </div>
             </div>
@@ -53,6 +89,8 @@ const SignUp = () => {
                 type="email"
                 placeholder="Email"
                 className={styles.inputField}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -62,6 +100,8 @@ const SignUp = () => {
                 type="password"
                 placeholder="Password"
                 className={styles.inputField}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
@@ -71,9 +111,12 @@ const SignUp = () => {
                 type="password"
                 placeholder="Confirm Password"
                 className={styles.inputField}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
 
+            {error && <p className={styles.error}>{error}</p>}
             <button type="submit" className={styles.createAccountButton}>
               Create Account
             </button>

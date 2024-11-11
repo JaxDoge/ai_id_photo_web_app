@@ -1,11 +1,29 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signInUser } from '../apicalls/users';
 import styles from "./SignIn.module.css";
 
 const SignIn = () => {
   const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const userData = await signInUser(email, password);
+      // handle successful login
+      console.log("Signed in successfully:", userData);
+      router.push("/generator"); // Redirect to the homepage
+    } catch (err) {
+      setError("Invalid email or password");
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -17,12 +35,14 @@ const SignIn = () => {
             Login to access your ID Photo Generator account
           </p>
 
-          <form>
+          <form onSubmit={handleSignIn}>
             <label className={styles.inputLabel}>Email</label>
             <input
               type="email"
-              placeholder="john.doe@gmail.com"
+              placeholder="Email"
               className={styles.inputField}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
 
             <label className={styles.inputLabel}>Password</label>
@@ -31,6 +51,8 @@ const SignIn = () => {
                 type="password"
                 placeholder="********"
                 className={styles.inputField}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
@@ -44,6 +66,7 @@ const SignIn = () => {
               </a>
             </div>
 
+            {error && <p className={styles.error}>{error}</p>}
             <button type="submit" className={styles.loginButton}>
               Login
             </button>
