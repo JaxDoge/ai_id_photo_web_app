@@ -19,23 +19,29 @@ const RENDER_MODES = [
   { value: 'center', label: 'Center Gradient (White)', mode: 2 },
 ] as const;
 
-const SIZE_TYPES = ['preset list', 'only change background', 'custom (px)'] as const;
+const SIZE_TYPES = ['preset list', 'only change background', 'custom (pixels)'] as const;
 
 const PRESET_SIZES = [
-  { value: 'driver_license', label: 'Driver\'s License', width: 600, height: 400 },
-  { value: 'us_passport', label: 'US Passport', width: 600, height: 400 },
-  { value: 'id_card', label: 'ID Card', width: 600, height: 400 },
+  { value: 'driver_license', label: 'Driver\'s License', width: 600, height: 600 },
+  { value: 'us_passport', label: 'US Passport', width: 600, height: 600 },
+  { value: 'ead', label: 'Employment Authorization Document', width: 600, height: 600 },
+  { value: 'greencard', label: 'Permanent Resident Card', width: 600, height: 600 },
+  { value: 'concealed_carry_permit', label: 'Concealed Carry Permit', width: 300, height: 300 },
+  { value: 'us_visa', label: 'American Visa', width: 600, height: 600 },
+  { value: 'jp_visa', label: 'Japanese Visa', width: 600, height: 600 },
+  { value: 'ca_visa', label: 'Canadian Visa', width: 420, height: 540 },
+  { value: 'one_inch', label: 'One Inch', width: 413, height: 295 },
 ] as const;
 
 type SizeType = (typeof SIZE_TYPES)[number];
 type BackgroundColor = (typeof BACKGROUND_COLORS)[keyof typeof BACKGROUND_COLORS]['hex'];
 type RenderMode = (typeof RENDER_MODES)[number]['mode'];
+type PresetSize = (typeof PRESET_SIZES)[number]['value'];
 
 interface GeneratorParams {
-  language: string;
   faceModel: string;
   mattingModel: string;
-  presetSize: string;
+  presetSize: PresetSize;
   backgroundColor: BackgroundColor;
   renderMode: RenderMode;
   sizeType: SizeType;
@@ -52,13 +58,14 @@ export default function GeneratorPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [params, setParams] = useState<GeneratorParams>({
-    language: 'en',
-    faceModel: 'face',
-    mattingModel: 'modnet',
-    presetSize: '1x1',
+    faceModel: 'mtcnn',
+    mattingModel: 'modnet_photographic_portrait_matting',
+    presetSize: 'driver_license',
     backgroundColor: '#FFFFFF',
     renderMode: 0,
     sizeType: 'preset list',
+    customWidth: 600,
+    customHeight: 600,
   });
 
   const [existingImages, setExistingImages] = useState<string[]>([]);
@@ -132,7 +139,13 @@ export default function GeneratorPage() {
     setParams(prev => ({ ...prev, [key]: value }));
   };
 
+  const [processedImage, setProcessedImage] = useState<string | null>(null);
+  const [processingError, setProcessingError] = useState<string | null>(null);
+
   const handleGenerate = async () => {
+    setProcessedImage(null);
+    setProcessingError(null);
+    
     if (!selectedImage) {
       alert('Please upload an image first');
       return;
@@ -171,12 +184,14 @@ export default function GeneratorPage() {
       }
 
       const result = await response.json();
-      // Handle the result - show the generated image
-      // or redirect to a results page
-      console.log(result);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      setProcessedImage(result.processedImage);
       
     } catch (error) {
       console.error('Error generating photo:', error);
+      setProcessingError(error instanceof Error ? error.message : 'Failed to generate photo');
       alert('Failed to generate photo. Please try again.');
     } finally {
       setIsLoading(false);
@@ -254,9 +269,39 @@ export default function GeneratorPage() {
               {/* Right panel - Preview */}
               <div className="border-2 border-gray-300 rounded-lg p-8">
                 <div className="flex items-center justify-center h-64">
-                  <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
+                  {isLoading ? (
+                    <div className="flex flex-col items-center">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                      <p className="mt-4 text-gray-500">Processing image...</p>
+                    </div>
+                  ) : processedImage ? (
+                    <img
+                      src={`data:image/jpeg;base64,${processedImage}`}
+                      alt="Processed"
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  ) : processingError ? (
+                    <div className="flex flex-col items-center text-red-500">
+                      <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                          strokeWidth="2" 
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                        />
+                      </svg>
+                      <p className="mt-4 text-sm text-center">{processingError}</p>
+                    </div>
+                  ) : (
+                    <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth="2" 
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
+                      />
+                    </svg>
+                  )}
                 </div>
               </div>
             </div>
@@ -279,7 +324,23 @@ export default function GeneratorPage() {
                           name="sizeType"
                           value={type}
                           checked={params.sizeType === type}
-                          onChange={(e) => handleParamChange('sizeType', e.target.value)}
+                          onChange={(e) => {
+                            const newType = e.target.value as SizeType;
+                            handleParamChange('sizeType', newType);
+                            
+                            // Set dimensions to null if "only change background" is selected
+                            if (newType === 'only change background') {
+                              handleParamChange('customWidth', null);
+                              handleParamChange('customHeight', null);
+                            } else if (newType === 'preset list' || newType === 'custom (pixels)') {
+                              // Reset to default preset dimensions when switching to preset list
+                              const defaultPreset = PRESET_SIZES.find(size => size.value === params.presetSize);
+                              if (defaultPreset) {
+                                handleParamChange('customWidth', defaultPreset.width);
+                                handleParamChange('customHeight', defaultPreset.height);
+                              }
+                            }
+                          }}
                           className="mr-2" 
                         />
                         <span className="capitalize">{type}</span>
@@ -288,21 +349,32 @@ export default function GeneratorPage() {
                     </div>
                   </div>
 
-                  {/* Conditional rendering based on sizeType */}
+                  {/* Custom size based on sizeType */}
                   {params.sizeType === 'preset list' && (
                     <div className="space-y-2 mt-2">
                       <label className="text-sm text-gray-600">Preset Size</label>
                       <select 
                         className="w-full p-2 border rounded-lg bg-white"
                         value={params.presetSize}
-                        onChange={(e) => handleParamChange('presetSize', e.target.value)}
+                        onChange={(e) => {
+                          const selectedPreset = PRESET_SIZES.find(size => size.value === e.target.value);
+                          handleParamChange('presetSize', e.target.value);
+                          if (selectedPreset) {
+                            handleParamChange('customWidth', selectedPreset.width);
+                            handleParamChange('customHeight', selectedPreset.height);
+                          }
+                        }}
                       >
-                        <option value="1x1">1" x 1"</option>
+                        {PRESET_SIZES.map((size) => (
+                          <option key={size.value} value={size.value}>
+                            {size.label} ({size.width}*{size.height}px)
+                          </option>
+                        ))}
                       </select>
                     </div>
                   )}
 
-                  {params.sizeType === 'custom (px)' && (
+                  {params.sizeType === 'custom (pixels)' && (
                     <div className="mt-2 grid grid-cols-2 gap-6 flex">
                       <div className="flex flex-col">
                         <label className="text-sm text-gray-600">Width (px)</label>
@@ -310,7 +382,7 @@ export default function GeneratorPage() {
                           type="number"
                           className="w-full p-2 border rounded-lg"
                           value={params.customWidth || 600}
-                          onChange={(e) => handleParamChange('customWidth', e.target.value)}
+                          onChange={(e) => handleParamChange('customWidth', parseInt(e.target.value, 10))}
                           min="1"
                         />
                       </div>
@@ -320,7 +392,7 @@ export default function GeneratorPage() {
                           type="number"
                           className="w-full p-2 border rounded-lg"
                           value={params.customHeight || 600}
-                          onChange={(e) => handleParamChange('customHeight', e.target.value)}
+                          onChange={(e) => handleParamChange('customHeight', parseInt(e.target.value, 10))}
                           min="1"   
                         />
                       </div>
@@ -360,18 +432,30 @@ export default function GeneratorPage() {
                       </label>
                     </div>
                     {showCustomColorInput && (
-                      <input
-                        type="text"
-                        placeholder="#RRGGBB"
-                        value={customColor}
-                        onChange={(e) => {
-                            setCustomColor(e.target.value);
-                            if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
-                              handleParamChange('backgroundColor', e.target.value);
+                      <div className="mt-2">
+                        <input
+                          type="text"
+                          placeholder={params.backgroundColor}
+                          value={customColor}
+                          onChange={(e) => {
+                            const newValue = e.target.value;
+                            setCustomColor(newValue);
+                            if (/^#[0-9A-F]{6}$/i.test(newValue)) {
+                              handleParamChange('backgroundColor', newValue);
                             }
-                        }}
-                        className="mt-2 p-2 border rounded-lg"
-                      />
+                          }}
+                          className={`p-2 border rounded-lg w-full ${
+                            customColor && !/^#[0-9A-F]{6}$/i.test(customColor)
+                              ? 'border-red-500 bg-red-50'
+                              : 'border-gray-300'
+                          }`}
+                        />
+                        {customColor && !/^#[0-9A-F]{6}$/i.test(customColor) && (
+                          <p className="text-red-500 text-sm mt-1">
+                            Please enter a valid hex color (e.g., #FF0000)
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
 
@@ -379,17 +463,17 @@ export default function GeneratorPage() {
                   <div className="space-y-2 mt-6">
                     <label className="text-sm text-gray-600">Render mode</label>
                     <div className="flex flex-wrap gap-x-4 gap-y-2">
-                      {RENDER_MODES.map((mode) => (
-                        <label key={mode.value} className="flex items-center min-w-[150px]">
+                      {RENDER_MODES.map((rmode) => (
+                        <label key={rmode.value} className="flex items-center min-w-[150px]">
                           <input 
                             type="radio" 
                             name="renderMode" 
-                            value={mode.mode} 
-                            checked={params.renderMode === mode.mode} 
-                            onChange={(e) => handleParamChange('renderMode', e.target.value)} 
+                            value={rmode.mode} 
+                            checked={params.renderMode === rmode.mode} 
+                            onChange={(e) => handleParamChange('renderMode', parseInt(e.target.value, 10))} 
                             className="mr-2" 
                           />
-                          <span>{mode.label}</span>
+                          <span>{rmode.label}</span>
                         </label>
                       ))}
                     </div>
@@ -436,7 +520,7 @@ export default function GeneratorPage() {
                 {/* Generate Button */}
                 <button 
                   className={`w-full py-3 rounded-lg transition-colors ${
-                    selectedImage && !isLoading
+                    selectedImage && !isLoading && !(customColor && !/^#[0-9A-F]{6}$/i.test(customColor))
                       ? 'bg-blue-500 hover:bg-blue-600 text-white'
                       : 'bg-gray-300 cursor-not-allowed text-gray-500'
                   }`}
@@ -454,7 +538,21 @@ export default function GeneratorPage() {
                 </div>
                 <div className="grid grid-cols-4 gap-2">
                   {existingImages.map((imgUrl, index) => (
-                    <div key={index} className="border rounded-lg p-1">
+                    <div 
+                      key={index} 
+                      className="border rounded-lg p-1 cursor-pointer hover:border-blue-500 transition-colors"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch(imgUrl);
+                          const blob = await response.blob();
+                          const file = new File([blob], `example-${index + 1}.jpg`, { type: 'image/jpeg' });
+                          setSelectedImage(file);
+                        } catch (error) {
+                          console.error('Error loading example image:', error);
+                          alert('Failed to load example image');
+                        }
+                      }}
+                    >
                       <img
                         src={imgUrl}
                         alt={`Example ID Photo ${index + 1}`}
