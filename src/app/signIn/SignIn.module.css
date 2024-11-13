@@ -153,6 +153,8 @@
 }
 
 .eyeIcon {
+  width: 30px;
+  height: 30px;
   position: absolute;
   right: 12px;
   top: 35%;
