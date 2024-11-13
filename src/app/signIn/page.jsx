@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { signInUser } from "../apicalls/users";
+import { signInUser, googleSignIn } from "../apicalls/users";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import styles from "./SignIn.module.css";
@@ -43,6 +43,54 @@ const SignIn = () => {
       setError("Invalid email or password");
     }
   };
+
+  const handleGoogleResponse = async (response) => {
+    const idToken = response.credential;
+    try {
+      // Send token to backend
+      await googleSignIn(idToken);
+      console.log("Google sign-in successful");
+      router.push("/generator"); // Redirect after sign-in
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+    }
+  };
+
+  // Initialize Google Sign-In button
+  useEffect(() => {
+    console.log("Google Client ID:", process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
+    // Function to add the Google Sign-In script dynamically
+    const loadGoogleScript = () => {
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+
+      script.onload = () => {
+        if (window.google) {
+          window.google.accounts.id.initialize({
+            client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+            callback: handleGoogleResponse,
+          });
+          window.google.accounts.id.renderButton(
+            document.getElementById("googleSignInButton"),
+            { theme: "outline", size: "large" }
+          );
+        }
+      };
+    };
+
+    // Load the script when the component mounts
+    loadGoogleScript();
+
+    return () => {
+      const googleScript = document.querySelector(
+        'script[src="https://accounts.google.com/gsi/client"]'
+      );
+      if (googleScript) googleScript.remove(); // Clean up the script on unmount
+    };
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -117,14 +165,8 @@ const SignIn = () => {
             <hr className={styles.dividerLine} />
           </div>
 
-          <button className={styles.googleButton}>
-            <img
-              src="/images/google.png"
-              alt="Google icon"
-              className={styles.googleIcon}
-            />{" "}
-            Google
-          </button>
+          {/* Google Sign-In Button */}
+          <div id="googleSignInButton" className={styles.googleButton}></div>
         </div>
 
         {/* Right Side - Image */}

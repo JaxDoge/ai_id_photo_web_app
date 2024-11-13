@@ -58,15 +58,31 @@ export const getLoggedInUserDetails = async () => {
       throw new Error("No authentication token found");
     }
 
-    const response = await axios.get(`${API_BASE_URL}/users/get-logged-in-user`, {
-      headers: {
-        Authorization: `Bearer ${token}`, // Attach JWT token in Authorization header
-      },
-    });
+    const response = await axios.get(
+      `${API_BASE_URL}/users/get-logged-in-user`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach JWT token in Authorization header
+        },
+      }
+    );
 
     return response.data; // Return the user's details
   } catch (error) {
     console.error("Error fetching logged-in user details:", error);
+    throw error.response ? error.response.data : error;
+  }
+};
+
+// Send the Google ID token to the backend
+export const googleSignIn = async (idToken) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/users/google-signin`, {
+      idToken,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error during Google Sign-In:", error);
     throw error.response ? error.response.data : error;
   }
 };

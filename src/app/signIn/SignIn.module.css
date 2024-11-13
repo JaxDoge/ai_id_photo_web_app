@@ -125,24 +125,14 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background-color: #fff;
-  color: #3b82f6;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.googleButton:hover {
-  background-color: #f0f4f8;
-}
-
-.googleIcon {
-  width: 20px;
-  margin-right: 8px;
+.googleButton > div {
+  width: 100%;
 }
 
 .imageSection {
@@ -161,6 +151,7 @@
   object-fit: cover;
   border-radius: 0;
 }
+
 .eyeIcon {
   position: absolute;
   right: 12px;
