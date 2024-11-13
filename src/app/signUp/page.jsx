@@ -62,9 +62,6 @@ const SignUp = () => {
         {/* Right Side - Form */}
         <div className={styles.formSection}>
           <h2 className={styles.formTitle}>Sign up</h2>
-          <p className={styles.formSubtitle}>
-            Let’s get you all set up so you can access your personal account.
-          </p>
 
           <form onSubmit={handleSignUp}>
             <div className={styles.inputGroup}>
@@ -155,7 +152,7 @@ const SignUp = () => {
 
           <div className={styles.divider}>
             <hr className={styles.dividerLine} />
-            <span className={styles.dividerText}>Or sign up with</span>
+            <span className={styles.dividerText}>Or Continue With</span>
             <hr className={styles.dividerLine} />
           </div>
 

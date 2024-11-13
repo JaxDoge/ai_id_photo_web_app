@@ -113,7 +113,7 @@ const SignIn = () => {
 
           <div className={styles.divider}>
             <hr className={styles.dividerLine} />
-            <span className={styles.dividerText}>Or login with</span>
+            <span className={styles.dividerText}>Or Login With</span>
             <hr className={styles.dividerLine} />
           </div>
 
