@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { signInUser } from '../apicalls/users';
+import { signInUser } from "../apicalls/users";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import styles from "./SignIn.module.css";
 
 const SignIn = () => {
@@ -10,6 +12,17 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    // Check if an email is saved in localStorage and pre-fill the input if so
+    const savedEmail = localStorage.getItem("savedEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -17,6 +30,12 @@ const SignIn = () => {
 
     try {
       const userData = await signInUser(email, password);
+      // Store the token based on "Remember Me" selection
+      if (rememberMe) {
+        localStorage.setItem("savedEmail", email);
+      } else {
+        localStorage.removeItem("savedEmail");
+      }
       // handle successful login
       console.log("Signed in successfully:", userData);
       router.push("/generator"); // Redirect to the homepage
@@ -48,22 +67,29 @@ const SignIn = () => {
             <label className={styles.inputLabel}>Password</label>
             <div className={styles.passwordContainer}>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="********"
                 className={styles.inputField}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <FontAwesomeIcon
+                icon={showPassword ? faEye : faEyeSlash}
+                className={styles.eyeIcon}
+                onClick={() => setShowPassword(!showPassword)}
+              />
             </div>
 
             <div className={styles.actions}>
               <label className={styles.rememberLabel}>
-                <input type="checkbox" style={{ marginRight: "8px" }} />{" "}
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  style={{ marginRight: "8px" }}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />{" "}
                 Remember me
               </label>
-              <a href="#" className={styles.forgotPassword}>
-                Forgot Password
-              </a>
             </div>
 
             {error && <p className={styles.error}>{error}</p>}

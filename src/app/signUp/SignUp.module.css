@@ -156,3 +156,14 @@
   width: 20px;
   margin-right: 8px;
 }
+
+.eyeIcon {
+  position: absolute;
+  right: 12px;
+  top: 63%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1em;
+  color: #6b7280;
+  padding: 0 5px;
+}

@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signUpUser } from "../apicalls/users";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import styles from "./SignUp.module.css";
 
 const SignUp = () => {
@@ -13,6 +15,8 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -33,6 +37,10 @@ const SignUp = () => {
       );
 
       console.log("Account created successfully:", newUserData);
+      // Show alert message on successful signup
+      alert(
+        "Account created successfully! You will be redirected to the sign-in page."
+      );
       router.push("/signIn"); // Redirect to login page after signup
     } catch (err) {
       setError("Error creating account. Please try again.");
@@ -97,22 +105,32 @@ const SignUp = () => {
             <div className={styles.passwordContainer}>
               <label className={styles.inputLabel}>Password</label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 className={styles.inputField}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+              />
+              <FontAwesomeIcon
+                icon={showPassword ? faEye : faEyeSlash}
+                className={styles.eyeIcon}
+                onClick={() => setShowPassword(!showPassword)}
               />
             </div>
 
             <div className={styles.passwordContainer}>
               <label className={styles.inputLabel}>Confirm Password</label>
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm Password"
                 className={styles.inputField}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <FontAwesomeIcon
+                icon={showConfirmPassword ? faEye : faEyeSlash}
+                className={styles.eyeIcon}
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               />
             </div>
 
