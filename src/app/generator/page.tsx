@@ -4,13 +4,43 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import "../history/historyPage.css"
 
+const BACKGROUND_COLORS = {
+  white: { value: 'white', hex: '#FFFFFF', label: 'White' },
+  blue: { value: 'blue', hex: '#0000FF', label: 'Blue' },
+  red: { value: 'red', hex: '#FF0000', label: 'Red' },
+  black: { value: 'black', hex: '#000000', label: 'Black' },
+  darkblue: { value: 'darkblue', hex: '#00008B', label: 'Dark Blue' },
+  lightgrey: { value: 'lightgrey', hex: '#D3D3D3', label: 'Light Grey' },
+} as const;
+
+const RENDER_MODES = [
+  { value: 'solid', label: 'Solid Color', mode: 0 },
+  { value: 'updown', label: 'Up-Down Gradient (White)', mode: 1 },
+  { value: 'center', label: 'Center Gradient (White)', mode: 2 },
+] as const;
+
+const SIZE_TYPES = ['preset list', 'only change background', 'custom (px)'] as const;
+
+const PRESET_SIZES = [
+  { value: 'driver_license', label: 'Driver\'s License', width: 600, height: 400 },
+  { value: 'us_passport', label: 'US Passport', width: 600, height: 400 },
+  { value: 'id_card', label: 'ID Card', width: 600, height: 400 },
+] as const;
+
+type SizeType = (typeof SIZE_TYPES)[number];
+type BackgroundColor = (typeof BACKGROUND_COLORS)[keyof typeof BACKGROUND_COLORS]['hex'];
+type RenderMode = (typeof RENDER_MODES)[number]['mode'];
+
 interface GeneratorParams {
   language: string;
   faceModel: string;
   mattingModel: string;
-  sizeType: 'list' | 'background' | 'custom';
   presetSize: string;
-  backgroundColor: 'white' | 'blue' | 'red' | 'lightgrey';
+  backgroundColor: BackgroundColor;
+  renderMode: RenderMode;
+  sizeType: SizeType;
+  customHeight?: number;
+  customWidth?: number;
 }
 
 export default function GeneratorPage() {
@@ -25,9 +55,10 @@ export default function GeneratorPage() {
     language: 'en',
     faceModel: 'face',
     mattingModel: 'modnet',
-    sizeType: 'list',
     presetSize: '1x1',
-    backgroundColor: 'white'
+    backgroundColor: '#FFFFFF',
+    renderMode: 0,
+    sizeType: 'preset list',
   });
 
   const [existingImages, setExistingImages] = useState<string[]>([]);
@@ -97,7 +128,7 @@ export default function GeneratorPage() {
     fileInputRef.current?.click();
   };
 
-  const handleParamChange = (key: keyof GeneratorParams, value: string) => {
+  const handleParamChange = (key: keyof GeneratorParams, value: any) => {
     setParams(prev => ({ ...prev, [key]: value }));
   };
 
@@ -153,6 +184,8 @@ export default function GeneratorPage() {
   };
 
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [customColor, setCustomColor] = useState('');
+  const [showCustomColorInput, setShowCustomColorInput] = useState(false);
 
   return (
     <div className="profileContainer">
@@ -232,6 +265,137 @@ export default function GeneratorPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left Side - Controls */}
               <div className="space-y-4">
+
+                {/* Parameters setting */}
+                <div className="border rounded-lg p-3">
+                  {/* Size Selection */}
+                  <div className="space-y-2">
+                    <label className="text-sm text-gray-600">ID Photo Size Selection</label>
+                    <div className="flex gap-4">
+                    {SIZE_TYPES.map((type) => (
+                      <label key={type} className="flex items-center">
+                        <input 
+                          type="radio" 
+                          name="sizeType"
+                          value={type}
+                          checked={params.sizeType === type}
+                          onChange={(e) => handleParamChange('sizeType', e.target.value)}
+                          className="mr-2" 
+                        />
+                        <span className="capitalize">{type}</span>
+                      </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Conditional rendering based on sizeType */}
+                  {params.sizeType === 'preset list' && (
+                    <div className="space-y-2 mt-2">
+                      <label className="text-sm text-gray-600">Preset Size</label>
+                      <select 
+                        className="w-full p-2 border rounded-lg bg-white"
+                        value={params.presetSize}
+                        onChange={(e) => handleParamChange('presetSize', e.target.value)}
+                      >
+                        <option value="1x1">1" x 1"</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {params.sizeType === 'custom (px)' && (
+                    <div className="mt-2 grid grid-cols-2 gap-6 flex">
+                      <div className="flex flex-col">
+                        <label className="text-sm text-gray-600">Width (px)</label>
+                        <input
+                          type="number"
+                          className="w-full p-2 border rounded-lg"
+                          value={params.customWidth || 600}
+                          onChange={(e) => handleParamChange('customWidth', e.target.value)}
+                          min="1"
+                        />
+                      </div>
+                      <div className="flex flex-col">
+                        <label className="text-sm text-gray-600">Height (px)</label>
+                        <input
+                          type="number"
+                          className="w-full p-2 border rounded-lg"
+                          value={params.customHeight || 600}
+                          onChange={(e) => handleParamChange('customHeight', e.target.value)}
+                          min="1"   
+                        />
+                      </div>
+                    </div>
+                  )}  
+                  <hr className="my-4 border-gray-200" />
+
+                  {/* Background Color */}
+                  <div className="space-y-2 mt-5">
+                    <label className="text-sm text-gray-600">Background Color</label>
+                    <div className="flex flex-wrap gap-x-4 gap-y-2">
+                      {Object.values(BACKGROUND_COLORS).map((color) => (
+                        <label key={color.value} className="flex items-center min-w-[100px]">
+                          <input 
+                            type="radio" 
+                            name="backgroundColor"
+                            value={color.hex}
+                            checked={!showCustomColorInput && params.backgroundColor === color.hex}
+                            onChange={(e) => {
+                              setShowCustomColorInput(false);
+                              handleParamChange('backgroundColor', e.target.value);
+                            }}
+                            className="mr-2" 
+                          />
+                          <span className="capitalize">{color.label}</span>
+                        </label>
+                      ))}
+                      <label className="flex items-center min-w-[100px]">
+                        <input
+                          type="radio"
+                          name="backgroundColor"
+                          checked={showCustomColorInput}
+                          onChange={() => setShowCustomColorInput(true)}
+                          className="mr-2"
+                        />
+                        <span>Other</span>
+                      </label>
+                    </div>
+                    {showCustomColorInput && (
+                      <input
+                        type="text"
+                        placeholder="#RRGGBB"
+                        value={customColor}
+                        onChange={(e) => {
+                            setCustomColor(e.target.value);
+                            if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
+                              handleParamChange('backgroundColor', e.target.value);
+                            }
+                        }}
+                        className="mt-2 p-2 border rounded-lg"
+                      />
+                    )}
+                  </div>
+
+                  {/* Render Mode */}
+                  <div className="space-y-2 mt-6">
+                    <label className="text-sm text-gray-600">Render mode</label>
+                    <div className="flex flex-wrap gap-x-4 gap-y-2">
+                      {RENDER_MODES.map((mode) => (
+                        <label key={mode.value} className="flex items-center min-w-[150px]">
+                          <input 
+                            type="radio" 
+                            name="renderMode" 
+                            value={mode.mode} 
+                            checked={params.renderMode === mode.mode} 
+                            onChange={(e) => handleParamChange('renderMode', e.target.value)} 
+                            className="mr-2" 
+                          />
+                          <span>{mode.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
                 <button
                   onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
                   className="text-sm text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
@@ -268,62 +432,6 @@ export default function GeneratorPage() {
                     </div>
                   </div>
                 )}
-
-                {/* Parameters setting */}
-                <div className="border rounded-lg p-3">
-                  {/* Size Selection */}
-                  <div className="space-y-2">
-                    <label className="text-sm text-gray-600">ID Photo Size Selection</label>
-                    <div className="flex gap-4">
-                    {['preset list', 'only change background', 'custom(px)'].map((type) => (
-                      <label key={type} className="flex items-center">
-                        <input 
-                          type="radio" 
-                          name="sizeType"
-                          value={type}
-                          checked={params.sizeType === type}
-                          onChange={(e) => handleParamChange('sizeType', e.target.value as 'list' | 'background' | 'custom')}
-                          className="mr-2" 
-                        />
-                        <span className="capitalize">{type}</span>
-                      </label>
-                      ))}
-                    </div>
-                  </div>
-
-
-                  {/* Preset Size */}
-                  <div className="space-y-2">
-                    <label className="text-sm text-gray-600">Preset Size</label>
-                    <select 
-                      className="w-full p-2 border rounded-lg bg-white"
-                      value={params.presetSize}
-                      onChange={(e) => handleParamChange('presetSize', e.target.value)}
-                    >
-                      <option value="1x1">1" x 1"</option>
-                    </select>
-                  </div>
-
-                  {/* Background Color */}
-                  <div className="space-y-2">
-                    <label className="text-sm text-gray-600">Background Color</label>
-                    <div className="flex gap-4">
-                      {['white', 'blue', 'red', 'lightgrey'].map((color) => (
-                        <label key={color} className="flex items-center">
-                          <input 
-                            type="radio" 
-                            name="backgroundColor"
-                            value={color}
-                            checked={params.backgroundColor === color}
-                            onChange={(e) => handleParamChange('backgroundColor', e.target.value as 'white' | 'blue' | 'red' | 'lightgrey')}
-                            className="mr-2" 
-                          />
-                          <span className="capitalize">{color}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
 
                 {/* Generate Button */}
                 <button 
