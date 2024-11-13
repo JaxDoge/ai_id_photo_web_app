@@ -7,7 +7,7 @@ import "../history/historyPage.css"
 interface GeneratorParams {
   language: string;
   faceModel: string;
-  keyingModel: string;
+  mattingModel: string;
   sizeType: 'list' | 'background' | 'custom';
   presetSize: string;
   backgroundColor: 'white' | 'blue' | 'red' | 'lightgrey';
@@ -24,11 +24,31 @@ export default function GeneratorPage() {
   const [params, setParams] = useState<GeneratorParams>({
     language: 'en',
     faceModel: 'face',
-    keyingModel: 'modnet',
+    mattingModel: 'modnet',
     sizeType: 'list',
     presetSize: '1x1',
     backgroundColor: 'white'
   });
+
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  useEffect(() => {
+    const imgUrls = Array.from({ length: 10 }).map((_, index) => `/images/exampleImage/test${index + 1}.jpg`);
+    
+    // Checking each image if exists or not
+    Promise.all(
+        imgUrls.map((url) =>
+            new Promise((resolve) => {
+                const img = new Image();
+                img.src = url;
+                img.onload = () => resolve(url);
+                img.onerror = () => resolve(null);
+            })
+        )
+    ).then((results) => {
+        // Filter not existing images right here
+        setExistingImages(results.filter((url) => url !== null) as string[]);
+    });
+  }, []);
 
   const handleFile = (file: File) => {
     const MAX_SIZE = 50 * 1024 * 1024; // 50MB in bytes
@@ -132,6 +152,8 @@ export default function GeneratorPage() {
     }
   };
 
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+
   return (
     <div className="profileContainer">
       <aside className="leftSidebar">
@@ -147,187 +169,191 @@ export default function GeneratorPage() {
           </button>
       </aside>
 
-      <div className="min-h-screen bg-background p-8" style={{backgroundColor: "#f1f4f7"}}>
-        <div className="max-w-6xl mx-auto space-y-6">
-          {/* Header */}
-          <h1 className="text-3xl font-bold text-center text-foreground">
-            ID PHOTO GENERATOR
-          </h1>
+      <div className="min-h-screen bg-background p-8 flex-1 flex justify-center" style={{backgroundColor: "#f1f4f7"}}>
+        <div className="w-full max-w-7xl">
+          <div className="max-w-6xl mx-auto space-y-6">
+            {/* Header */}
+            <h1 className="text-3xl font-bold text-center text-foreground">
+              ID PHOTO GENERATOR
+            </h1>
 
-          {/* Main content grid - Image Upload and Preview */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Left panel - Image Upload */}
-            <div 
-              className={`border-2 border-dashed rounded-lg p-8 ${
-                dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-              }`}
-              onDragEnter={handleDrag}
-              onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
-              onClick={handleClick}
-              style={{ cursor: 'pointer' }}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handleChange}
-              />
-              <div className="flex flex-col items-center justify-center h-64">
-                {selectedImage ? (
-                  <img
-                    src={URL.createObjectURL(selectedImage)}
-                    alt="Selected"
-                    className="max-h-full max-w-full object-contain"
-                  />
-                ) : (
-                  <>
-                    <svg className="w-8 h-8 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <p className="text-sm text-gray-500">Drop Image Here</p>
-                    <p className="text-sm text-gray-500 mt-2">-or-</p>
-                    <p className="text-sm text-gray-500">Click to Upload</p>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Right panel - Preview */}
-            <div className="border-2 border-gray-300 rounded-lg p-8">
-              <div className="flex items-center justify-center h-64">
-                <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          {/* Controls and Examples Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Left Side - Controls */}
-            <div className="space-y-4">
-              {/* Model Selection Row */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm text-gray-600">Language</label>
-                  <select 
-                    className="w-full p-2 border rounded-lg bg-white"
-                    value={params.language}
-                    onChange={(e) => handleParamChange('language', e.target.value)}
-                  >
-                    <option value="en">en</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm text-gray-600">Face Detection Model</label>
-                  <select 
-                    className="w-full p-2 border rounded-lg bg-white"
-                    value={params.faceModel}
-                    onChange={(e) => handleParamChange('faceModel', e.target.value)}
-                  >
-                    <option value="face">Face++ (Online API)</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm text-gray-600">Keying Models</label>
-                  <select 
-                    className="w-full p-2 border rounded-lg bg-white"
-                    value={params.keyingModel}
-                    onChange={(e) => handleParamChange('keyingModel', e.target.value)}
-                  >
-                    <option value="modnet">modnet</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Size Selection */}
-              <div className="space-y-2">
-                <label className="text-sm text-gray-600">ID Photo Size Selection</label>
-                <div className="flex gap-4">
-                  {['list', 'background', 'custom'].map((type) => (
-                    <label key={type} className="flex items-center">
-                      <input 
-                        type="radio" 
-                        name="sizeType"
-                        value={type}
-                        checked={params.sizeType === type}
-                        onChange={(e) => handleParamChange('sizeType', e.target.value as 'list' | 'background' | 'custom')}
-                        className="mr-2" 
-                      />
-                      <span className="capitalize">{type}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Preset Size */}
-              <div className="space-y-2">
-                <label className="text-sm text-gray-600">Preset Size</label>
-                <select 
-                  className="w-full p-2 border rounded-lg bg-white"
-                  value={params.presetSize}
-                  onChange={(e) => handleParamChange('presetSize', e.target.value)}
-                >
-                  <option value="1x1">1" x 1"</option>
-                </select>
-              </div>
-
-              {/* Background Color */}
-              <div className="space-y-2">
-                <label className="text-sm text-gray-600">Background Color</label>
-                <div className="flex gap-4">
-                  {['white', 'blue', 'red', 'lightgrey'].map((color) => (
-                    <label key={color} className="flex items-center">
-                      <input 
-                        type="radio" 
-                        name="backgroundColor"
-                        value={color}
-                        checked={params.backgroundColor === color}
-                        onChange={(e) => handleParamChange('backgroundColor', e.target.value as 'white' | 'blue' | 'red' | 'lightgrey')}
-                        className="mr-2" 
-                      />
-                      <span className="capitalize">{color}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Generate Button */}
-              <button 
-                className={`w-full py-3 rounded-lg transition-colors ${
-                  selectedImage && !isLoading
-                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                    : 'bg-gray-300 cursor-not-allowed text-gray-500'
+            {/* Main content grid - Image Upload and Preview */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Left panel - Image Upload */}
+              <div 
+                className={`border-2 border-dashed rounded-lg p-8 ${
+                  dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
                 }`}
-                onClick={handleGenerate}
-                disabled={!selectedImage || isLoading}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+                onClick={handleClick}
+                style={{ cursor: 'pointer' }}
               >
-                {isLoading ? 'Generating...' : 'Generate'}
-              </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleChange}
+                />
+                <div className="flex flex-col items-center justify-center h-64">
+                  {selectedImage ? (
+                    <img
+                      src={URL.createObjectURL(selectedImage)}
+                      alt="Selected"
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  ) : (
+                    <>
+                      <svg className="w-8 h-8 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <p className="text-sm text-gray-500">Drop Image Here</p>
+                      <p className="text-sm text-gray-500 mt-2">-or-</p>
+                      <p className="text-sm text-gray-500">Click to Upload</p>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Right panel - Preview */}
+              <div className="border-2 border-gray-300 rounded-lg p-8">
+                <div className="flex items-center justify-center h-64">
+                  <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
-            {/* Right Side - Examples */}
-            <div className="border rounded-lg p-4">
-              <div className="mb-2">
-                <h2 className="text-lg font-semibold text-gray-700">Examples</h2>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="border rounded-lg p-2">
-                  <img
-                    src="/images/exampleImage/test3.jpeg"
-                    alt="Example ID Photo 1"
-                    className="w-full h-auto object-cover aspect-[3/4]"
-                  />
+            {/* Controls and Examples Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Left Side - Controls */}
+              <div className="space-y-4">
+                <button
+                  onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+                  className="text-sm text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+                >
+                  <span>{showAdvancedSettings ? 'Hide' : 'Show'} Advanced Model Settings</span>
+                  <i className={`fas fa-chevron-${showAdvancedSettings ? 'up' : 'down'}`}></i>
+                </button>
+
+                {showAdvancedSettings && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm text-gray-600">Face Detection Model</label>
+                      <select 
+                        className="w-full p-2 border rounded-lg bg-white"
+                        value={params.faceModel}
+                        onChange={(e) => handleParamChange('faceModel', e.target.value)}
+                      >
+                        <option value="mtcnn">mtcnn (Default)</option>
+                        <option value="retinaface-resnet50">retinaface-resnet50 (High Accuracy)</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm text-gray-600">Matting Models</label>
+                      <select 
+                        className="w-full p-2 border rounded-lg bg-white"
+                        value={params.mattingModel}
+                        onChange={(e) => handleParamChange('mattingModel', e.target.value)}
+                      >
+                        <option value="modnet_photographic_portrait_matting">modnet PP matting (Default)</option>
+                        <option value="birefnet-v1-lite">birefnet-v1-lite (High Accuracy, Slow, GPU acceleration)</option>
+                        <option value="hivision_modnet">hivision_modnet</option>
+                        <option value="rmbg-1.4">rmbg-1.4</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                {/* Parameters setting */}
+                <div className="border rounded-lg p-3">
+                  {/* Size Selection */}
+                  <div className="space-y-2">
+                    <label className="text-sm text-gray-600">ID Photo Size Selection</label>
+                    <div className="flex gap-4">
+                    {['preset list', 'only change background', 'custom(px)'].map((type) => (
+                      <label key={type} className="flex items-center">
+                        <input 
+                          type="radio" 
+                          name="sizeType"
+                          value={type}
+                          checked={params.sizeType === type}
+                          onChange={(e) => handleParamChange('sizeType', e.target.value as 'list' | 'background' | 'custom')}
+                          className="mr-2" 
+                        />
+                        <span className="capitalize">{type}</span>
+                      </label>
+                      ))}
+                    </div>
+                  </div>
+
+
+                  {/* Preset Size */}
+                  <div className="space-y-2">
+                    <label className="text-sm text-gray-600">Preset Size</label>
+                    <select 
+                      className="w-full p-2 border rounded-lg bg-white"
+                      value={params.presetSize}
+                      onChange={(e) => handleParamChange('presetSize', e.target.value)}
+                    >
+                      <option value="1x1">1" x 1"</option>
+                    </select>
+                  </div>
+
+                  {/* Background Color */}
+                  <div className="space-y-2">
+                    <label className="text-sm text-gray-600">Background Color</label>
+                    <div className="flex gap-4">
+                      {['white', 'blue', 'red', 'lightgrey'].map((color) => (
+                        <label key={color} className="flex items-center">
+                          <input 
+                            type="radio" 
+                            name="backgroundColor"
+                            value={color}
+                            checked={params.backgroundColor === color}
+                            onChange={(e) => handleParamChange('backgroundColor', e.target.value as 'white' | 'blue' | 'red' | 'lightgrey')}
+                            className="mr-2" 
+                          />
+                          <span className="capitalize">{color}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="border rounded-lg p-2">
-                  <img
-                    src="/images/exampleImage/test4.jpg"
-                    alt="Example ID Photo 2"
-                    className="w-full h-auto object-cover aspect-[3/4]"
-                  />
+
+                {/* Generate Button */}
+                <button 
+                  className={`w-full py-3 rounded-lg transition-colors ${
+                    selectedImage && !isLoading
+                      ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                      : 'bg-gray-300 cursor-not-allowed text-gray-500'
+                  }`}
+                  onClick={handleGenerate}
+                  disabled={!selectedImage || isLoading}
+                >
+                  {isLoading ? 'Generating...' : 'Generate'}
+                </button>
+              </div>
+
+              {/* Right Side - Examples */}
+              <div className="border rounded-lg p-4">
+                <div className="mb-2">
+                  <h2 className="text-lg font-semibold text-gray-700">Examples</h2>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  {existingImages.map((imgUrl, index) => (
+                    <div key={index} className="border rounded-lg p-1">
+                      <img
+                        src={imgUrl}
+                        alt={`Example ID Photo ${index + 1}`}
+                        className="w-full h-auto object-cover aspect-[3/4]"
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
