@@ -9,11 +9,11 @@ const baseApiUrl = process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL;
 
 const BACKGROUND_COLORS = {
   white: { value: 'white', hex: '#FFFFFF', label: 'White' },
-  blue: { value: 'blue', hex: '#0000FF', label: 'Blue' },
-  red: { value: 'red', hex: '#FF0000', label: 'Red' },
+  blue: { value: 'blue', hex: '#628BCE', label: 'Blue' },
+  red: { value: 'red', hex: '#D74532', label: 'Red' },
   black: { value: 'black', hex: '#000000', label: 'Black' },
-  darkblue: { value: 'darkblue', hex: '#00008B', label: 'Dark Blue' },
-  lightgrey: { value: 'lightgrey', hex: '#D3D3D3', label: 'Light Grey' },
+  darkblue: { value: 'darkblue', hex: '#4B6190', label: 'Dark Blue' },
+  lightgrey: { value: 'lightgrey', hex: '#F2F0F0', label: 'Light Grey' },
 } as const;
 
 const RENDER_MODES = [
@@ -33,7 +33,7 @@ const PRESET_SIZES = [
   { value: 'us_visa', label: 'American Visa', width: 600, height: 600 },
   { value: 'jp_visa', label: 'Japanese Visa', width: 600, height: 600 },
   { value: 'ca_visa', label: 'Canadian Visa', width: 420, height: 540 },
-  { value: 'one_inch', label: 'One Inch', width: 413, height: 295 },
+  { value: 'one_inch', label: 'One Inch', width: 295, height: 413 },
 ] as const;
 
 type SizeType = (typeof SIZE_TYPES)[number];
@@ -194,7 +194,7 @@ export default function GeneratorPage() {
         throw new Error(response.data.error);
       }
 
-      setProcessedImage(response.data.data.image_base64_hd);
+      setProcessedImage(response.data.data.image_base64);
       
     } catch (error) {
       console.error('Error generating photo:', error);
