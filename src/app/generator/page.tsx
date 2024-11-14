@@ -71,6 +71,13 @@ export default function GeneratorPage() {
     height: 600,
   });
 
+  const [processedImage, setProcessedImage] = useState<string | null>(null);
+  const [processingError, setProcessingError] = useState<string | null>(null);
+
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [customColor, setCustomColor] = useState('');
+  const [showCustomColorInput, setShowCustomColorInput] = useState(false);
+
   const [existingImages, setExistingImages] = useState<string[]>([]);
   useEffect(() => {
     const imgUrls = Array.from({ length: 10 }).map((_, index) => `/images/exampleImage/test${index + 1}.jpg`);
@@ -142,9 +149,6 @@ export default function GeneratorPage() {
     setParams(prev => ({ ...prev, [key]: value }));
   };
 
-  const [processedImage, setProcessedImage] = useState<string | null>(null);
-  const [processingError, setProcessingError] = useState<string | null>(null);
-
   const handleGenerate = async () => {
     setProcessedImage(null);
     setProcessingError(null);
@@ -182,26 +186,34 @@ export default function GeneratorPage() {
           'Content-Type': 'multipart/form-data',
           'Accept': 'application/json',
         },
-        withCredentials: true,
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
       });
 
       if (response.data.error) {
         throw new Error(response.data.error);
       }
-      setProcessedImage(response.data.processedImage);
+
+      setProcessedImage(response.data.data.image_base64_hd);
       
     } catch (error) {
       console.error('Error generating photo:', error);
-      setProcessingError(error instanceof Error ? error.message : 'Failed to generate photo');
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          setProcessingError(`Server error: ${error.response.data?.message || error.message}`);
+        } else if (error.request) {
+          setProcessingError('No response from server. Please check your connection.');
+        } else {
+          setProcessingError(`Request error: ${error.message}`);
+        }
+      } else {
+        setProcessingError('An unexpected error occurred');
+      }
       alert('Failed to generate photo. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
-
-  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
-  const [customColor, setCustomColor] = useState('');
-  const [showCustomColorInput, setShowCustomColorInput] = useState(false);
 
   return (
     <div className="profileContainer">
@@ -277,7 +289,7 @@ export default function GeneratorPage() {
                     </div>
                   ) : processedImage ? (
                     <img
-                      src={`data:image/jpeg;base64,${processedImage}`}
+                      src={processedImage}
                       alt="Processed"
                       className="max-h-full max-w-full object-contain"
                     />
