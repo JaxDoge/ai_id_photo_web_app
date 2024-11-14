@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import "../history/historyPage.css"
 
+const baseApiUrl = process.env.REACT_APP_BASE_API_URL;
+
 const BACKGROUND_COLORS = {
   white: { value: 'white', hex: '#FFFFFF', label: 'White' },
   blue: { value: 'blue', hex: '#0000FF', label: 'Blue' },
@@ -39,14 +41,14 @@ type RenderMode = (typeof RENDER_MODES)[number]['mode'];
 type PresetSize = (typeof PRESET_SIZES)[number]['value'];
 
 interface GeneratorParams {
-  faceModel: string;
-  mattingModel: string;
+  face_detect_model: string;
+  human_matting_model: string;
   presetSize: PresetSize;
   backgroundColor: BackgroundColor;
   renderMode: RenderMode;
   sizeType: SizeType;
-  customHeight?: number;
-  customWidth?: number;
+  height?: number;
+  width?: number;
 }
 
 export default function GeneratorPage() {
@@ -58,14 +60,14 @@ export default function GeneratorPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [params, setParams] = useState<GeneratorParams>({
-    faceModel: 'mtcnn',
-    mattingModel: 'modnet_photographic_portrait_matting',
+    face_detect_model: 'mtcnn',
+    human_matting_model: 'modnet_photographic_portrait_matting',
     presetSize: 'driver_license',
     backgroundColor: '#FFFFFF',
     renderMode: 0,
     sizeType: 'preset list',
-    customWidth: 600,
-    customHeight: 600,
+    width: 600,
+    height: 600,
   });
 
   const [existingImages, setExistingImages] = useState<string[]>([]);
@@ -174,7 +176,7 @@ export default function GeneratorPage() {
         } : value);
       });
 
-      const response = await fetch('/api/generate', {
+      const response = await fetch(`${baseApiUrl}/photo/process`, {
         method: 'POST',
         body: formData,
       });
@@ -330,14 +332,14 @@ export default function GeneratorPage() {
                             
                             // Set dimensions to null if "only change background" is selected
                             if (newType === 'only change background') {
-                              handleParamChange('customWidth', null);
-                              handleParamChange('customHeight', null);
+                              handleParamChange('width', null);
+                              handleParamChange('height', null);
                             } else if (newType === 'preset list' || newType === 'custom (pixels)') {
                               // Reset to default preset dimensions when switching to preset list
                               const defaultPreset = PRESET_SIZES.find(size => size.value === params.presetSize);
                               if (defaultPreset) {
-                                handleParamChange('customWidth', defaultPreset.width);
-                                handleParamChange('customHeight', defaultPreset.height);
+                                handleParamChange('width', defaultPreset.width);
+                                handleParamChange('height', defaultPreset.height);
                               }
                             }
                           }}
@@ -360,8 +362,8 @@ export default function GeneratorPage() {
                           const selectedPreset = PRESET_SIZES.find(size => size.value === e.target.value);
                           handleParamChange('presetSize', e.target.value);
                           if (selectedPreset) {
-                            handleParamChange('customWidth', selectedPreset.width);
-                            handleParamChange('customHeight', selectedPreset.height);
+                            handleParamChange('width', selectedPreset.width);
+                            handleParamChange('height', selectedPreset.height);
                           }
                         }}
                       >
@@ -381,8 +383,8 @@ export default function GeneratorPage() {
                         <input
                           type="number"
                           className="w-full p-2 border rounded-lg"
-                          value={params.customWidth || 600}
-                          onChange={(e) => handleParamChange('customWidth', parseInt(e.target.value, 10))}
+                          value={params.width || 600}
+                          onChange={(e) => handleParamChange('width', parseInt(e.target.value, 10))}
                           min="1"
                         />
                       </div>
@@ -391,8 +393,8 @@ export default function GeneratorPage() {
                         <input
                           type="number"
                           className="w-full p-2 border rounded-lg"
-                          value={params.customHeight || 600}
-                          onChange={(e) => handleParamChange('customHeight', parseInt(e.target.value, 10))}
+                          value={params.height || 600}
+                          onChange={(e) => handleParamChange('height', parseInt(e.target.value, 10))}
                           min="1"   
                         />
                       </div>
@@ -494,8 +496,8 @@ export default function GeneratorPage() {
                       <label className="text-sm text-gray-600">Face Detection Model</label>
                       <select 
                         className="w-full p-2 border rounded-lg bg-white"
-                        value={params.faceModel}
-                        onChange={(e) => handleParamChange('faceModel', e.target.value)}
+                        value={params.face_detect_model}
+                        onChange={(e) => handleParamChange('face_detect_model', e.target.value)}
                       >
                         <option value="mtcnn">mtcnn (Default)</option>
                         <option value="retinaface-resnet50">retinaface-resnet50 (High Accuracy)</option>
@@ -505,8 +507,8 @@ export default function GeneratorPage() {
                       <label className="text-sm text-gray-600">Matting Models</label>
                       <select 
                         className="w-full p-2 border rounded-lg bg-white"
-                        value={params.mattingModel}
-                        onChange={(e) => handleParamChange('mattingModel', e.target.value)}
+                        value={params.human_matting_model}
+                        onChange={(e) => handleParamChange('human_matting_model', e.target.value)}
                       >
                         <option value="modnet_photographic_portrait_matting">modnet PP matting (Default)</option>
                         <option value="birefnet-v1-lite">birefnet-v1-lite (High Accuracy, Slow, GPU acceleration)</option>
