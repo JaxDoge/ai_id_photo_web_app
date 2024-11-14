@@ -3,8 +3,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import "../history/historyPage.css"
+import axios from "axios";
 
-const baseApiUrl = process.env.REACT_APP_BASE_API_URL;
+const baseApiUrl = process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL;
 
 const BACKGROUND_COLORS = {
   white: { value: 'white', hex: '#FFFFFF', label: 'White' },
@@ -176,20 +177,18 @@ export default function GeneratorPage() {
         } : value);
       });
 
-      const response = await fetch(`${baseApiUrl}/photo/process`, {
-        method: 'POST',
-        body: formData,
+      const response = await axios.post(`${baseApiUrl}/photo/process`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json',
+        },
+        withCredentials: true,
       });
 
-      if (!response.ok) {
-        throw new Error('Generation failed');
+      if (response.data.error) {
+        throw new Error(response.data.error);
       }
-
-      const result = await response.json();
-      if (result.error) {
-        throw new Error(result.error);
-      }
-      setProcessedImage(result.processedImage);
+      setProcessedImage(response.data.processedImage);
       
     } catch (error) {
       console.error('Error generating photo:', error);

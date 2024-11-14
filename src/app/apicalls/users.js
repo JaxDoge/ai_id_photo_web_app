@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_BASE_URL =
-  process.env.REACT_APP_BASE_API_URL || "http://localhost:4000";
+  process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL || "http://localhost:4000";
 
 // Helper function to get the token from localStorage
 const getAuthToken = () => localStorage.getItem("authToken");
