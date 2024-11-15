@@ -57,11 +57,13 @@ const SignIn = () => {
     try {
       // Send token to backend
       const userData = await googleSignIn(idToken);
-
+      // Clear previous user data
+      setUser(null);
       // Set the user data in context
       setUser(userData.data);
-
-      console.log("Google sign-in successful");
+      // Store the token in local storage
+      localStorage.setItem("authToken", userData.token);
+      console.log("Google sign-in successful", userData.token);
       router.push("/generator"); // Redirect after sign-in
     } catch (error) {
       console.error("Google sign-in error:", error);
