@@ -1,0 +1,5 @@
+.profileContainer {
+    display: flex;
+    height: 110vh;
+    background-color: #f1f4f7;
+}

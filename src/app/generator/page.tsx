@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
-import "../history/historyPage.css"
+import NavigationBar from "../NavigationBar/navigation.js";
+import "./generator.css";
 import axios from "axios";
 
 const baseApiUrl = process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL;
@@ -217,18 +218,7 @@ export default function GeneratorPage() {
 
   return (
     <div className="profileContainer">
-      <aside className="leftSidebar">
-          <div style={{marginTop: 100}}></div>
-          <button className="icon active" onClick={() => router.push('/generator')}>
-              <i className="fas fa-house" />
-          </button>
-          <button className="icon" onClick={() => router.push('/profile')}>
-              <i className="fa-solid fa-grip" />
-          </button>
-          <button className="icon" onClick={() => router.push('/history')}>
-              <i className="fas fa-file-alt" />
-          </button>
-      </aside>
+      <NavigationBar />
 
       <div className="min-h-screen bg-background p-8 flex-1 flex justify-center" style={{backgroundColor: "#f1f4f7"}}>
         <div className="w-full max-w-7xl">

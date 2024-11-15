@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import "./profilePage.css";
+import NavigationBar from "../app/NavigationBar/navigation";
 
 const ProfileCard = () => {
     const router = useRouter();
@@ -36,18 +37,7 @@ const ProfileCard = () => {
     return (
         <div className="profileContainer">
             {/* Left Sidebar */}
-            <aside className="leftSidebar">
-                <div style={{marginTop: 100}}></div>
-                <button className="icon" onClick={() => router.push('/generator')}>
-                    <i className="fas fa-house" />
-                </button>
-                <button className="icon active" onClick={() => router.push('/profile')}>
-                    <i className="fa-solid fa-grip" />
-                </button>
-                <button className="icon" onClick={() => router.push('/history')}>
-                    <i className="fas fa-file-alt" />
-                </button>
-            </aside>
+            <NavigationBar />
 
             {/* Main Content */}
             <main className="mainContent">

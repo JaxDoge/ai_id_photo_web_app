@@ -2,10 +2,43 @@
 
 import "./historyPage.css";
 import React, { useState, useEffect } from "react";
-import { useRouter } from 'next/navigation';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Link from 'next/link';
+import { getLoggedInUserDetails } from "../apicalls/users";
+import { fetchHistoryPhotosById } from "../apicalls/history"; 
+import { useParams } from "next/navigation";
+import NavigationBar from "../NavigationBar/navigation";
 
-const UserProfileHistoryPage = () => {
+const UserProfileHistoryPage = ({ users }) => {
+    const { userId } = useParams();
+    const API_BASE_URL = process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL || "http://localhost:4000";
+    const HISTORY_API_URL = `${API_BASE_URL}/users/${userId}/get-photo-history`;
+    
+    const [userData, setUserData] = useState("");
+    const [photos, setPhotos] = useState([]);
+    const [currentDate, setCurrentDate] = useState("");
+    
+    // Fetch user data and photos on mount
+    useEffect(() => {
+        async function loadUserData() {
+            try {
+                const userResponse = await getLoggedInUserDetails();
+                setUserData(userResponse.data);
+                const historyResponse = await fetchHistoryPhotosById(userResponse.data._id);
+                setPhotos(historyResponse.data);
+            } catch (error) {
+                console.error("Error loading user data or history:", error);
+            }
+        }
+        loadUserData();
+
+        // Set the current date
+        const today = new Date();
+        const options = { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' };
+        setCurrentDate(today.toLocaleDateString("en-US", options));
+    }, []);
+
+
     const [existingImages, setExistingImages] = useState([]);
 
     useEffect(() => {
@@ -48,9 +81,6 @@ const UserProfileHistoryPage = () => {
         }
     }
 
-    const router = useRouter();
-    const [currentDate, setCurrentDate] = useState("");
-
     useEffect(() => {
         const today = new Date();
         const options = { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' };
@@ -58,48 +88,18 @@ const UserProfileHistoryPage = () => {
         setCurrentDate(formattedDate);
     }, []);
 
-    // const [user, setUser] = useState({
-    //     user_first_name: '',
-    //     user_last_name: '',
-    //     user_email: '',
-    // });
-
-    // useEffect(() => {
-    //     // Fetch user data from the API
-    //     const fetchUserData = async () => {
-    //         try {
-    //             const response = await fetch('/api/user'); // API route
-    //             const data = await response.json();
-    //             setUser(data);
-    //         } catch (error) {
-    //             console.error('Error fetching user data:', error);
-    //         }
-    //     };
-    //     fetchUserData();
-    // }, []);
-
+    
     return (
         <div className="profileContainer">
             {/* Left Sidebar */}
-            <aside className="leftSidebar">
-                <div style={{marginTop: 100}}></div>
-                <button className="icon" onClick={() => router.push('/generator')}>
-                    <i className="fas fa-house" />
-                </button>
-                <button className="icon" onClick={() => router.push('/profile')}>
-                    <i className="fa-solid fa-grip" />
-                </button>
-                <button className="icon active" onClick={() => router.push('/history')}>
-                    <i className="fas fa-file-alt" />
-                </button>
-            </aside>
+            <NavigationBar />
         
             {/* Main Content */}
             <main className="mainContent">
                 {/* Top Section */}
                 <div className="topSection">
                     {/* switching "Amanda to user_first_name" */}
-                    <h1 className="welcomeMessage">Welcome, Amanda</h1>
+                    <h1 className="welcomeMessage">Welcome, {userData?.firstName}</h1>
                     <p className="date">{currentDate}</p>
                 </div>
                 
