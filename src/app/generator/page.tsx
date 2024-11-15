@@ -438,7 +438,7 @@ export default function GeneratorPage() {
                           onChange={() => setShowCustomColorInput(true)}
                           className="mr-2"
                         />
-                        <span>Other</span>
+                        <span>Other (HEX)</span>
                       </label>
                     </div>
                     {showCustomColorInput && (

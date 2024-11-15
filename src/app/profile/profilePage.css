@@ -1,0 +1,155 @@
+.profileContainer {
+    display: flex;
+    height: 100vh; /* 调整为适合视窗的高度 */
+    background-color: #f1f4f7;
+}
+
+.leftSidebar {
+    background-color: hsl(0, 0%, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.leftSidebar .icon {
+    background-color: transparent;
+    border: none;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.icon img {
+    width: 30px;
+    height: 30px;
+}
+
+.icon:hover {
+    background-color: #e0f2ff;
+}
+
+.icon.active {
+    background-color: #d0e7ff;
+}
+
+.mainContent {
+    flex: 1;
+    padding: 30px; /* 增加外部间距 */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.welcomeMessage {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.date {
+    font-size: 14px;
+    color: #888;
+}
+
+.middleSection {
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.colorBar {
+    height: 50px;
+    background: linear-gradient(to right, #b2d0f7, #eae6ff, #fef6e4);
+}
+
+.contentBody {
+    padding: 25px; /* 增加内部填充，使内容与边缘保持距离 */
+}
+
+.profileInfo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profileImage {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.profileName {
+    font-size: 18px;
+    font-weight: bold;
+    color: #363b44;
+}
+
+.profileEmail {
+    text-decoration: underline;
+    font-size: 14px;
+    color: #6b7280;
+    transition: color 0.3s;
+}
+
+.profileEmail:hover {
+    color: #1a73e8;
+}
+
+.editButton {
+    margin-left: auto;
+    padding: 8px 16px; /* 调整按钮的内边距 */
+    background-color: #3b82f6;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.editButton:hover {
+    background-color: #2563eb;
+}
+
+.fieldLabel {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 5px;
+}
+
+.inputField, .genderSelect {
+    width: 100%;
+    background-color: #f1f4f7;
+    padding: 10px 12px; /* 统一内边距 */
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 14px; /* 统一字体大小 */
+    transition: border-color 0.2s;
+}
+
+.inputField:focus, .genderSelect:focus {
+    border-color: #3b82f6;
+    outline: none;
+}
+
+.genderSelect {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.grid-cols-2 .col-span-2 {
+    margin-top: 0;
+}
