@@ -150,7 +150,7 @@ const UserProfileHistoryPage = () => {
                                         onError={(e) => {
                                             // Hidding not existing figures
                                             // e.target.closest('.photoItem').style.display = 'none';
-                                            e.target.src = "https://i0.wp.com/chemmatcars.uchicago.edu/wp-content/uploads/2021/03/default-placeholder-image-1024x1024-1.png?ssl=1";
+                                            // e.target.src = "https://i0.wp.com/chemmatcars.uchicago.edu/wp-content/uploads/2021/03/default-placeholder-image-1024x1024-1.png?ssl=1";
                                         }}
                                     />
                                     <div className="overlay">
