@@ -86,3 +86,25 @@ export const googleSignIn = async (idToken) => {
     throw error.response ? error.response.data : error;
   }
 };
+
+// Function to update user details
+export const updateUser = async (userData) => {
+  try {
+    const token = getAuthToken();
+
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response = await axios.put(`${API_BASE_URL}/users/update`, userData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data; // Return the updated user data
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw error.response ? error.response.data : error;
+  }
+};
