@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { signUpUser, googleSignIn } from "../apicalls/users";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { UserContext } from "../../contexts/UserContext";
 import styles from "./SignUp.module.css";
 
 const SignUp = () => {
@@ -17,6 +18,7 @@ const SignUp = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { setUser } = useContext(UserContext); 
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -51,8 +53,14 @@ const SignUp = () => {
     const idToken = response.credential;
     try {
       // Send token to backend
-      await googleSignIn(idToken);
-      console.log("Google sign-in successful");
+      const userData = await googleSignIn(idToken);
+      // Clear previous user data
+      setUser(null);
+      // Set the user data in context
+      setUser(userData.data);
+      // Store the token in local storage
+      localStorage.setItem("authToken", userData.token);
+      console.log("Google sign-in successful", userData.token);
       router.push("/generator"); // Redirect after sign-in
     } catch (error) {
       console.error("Google sign-in error:", error);
