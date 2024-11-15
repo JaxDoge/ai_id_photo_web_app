@@ -216,6 +216,13 @@ export default function GeneratorPage() {
     }
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/signin"); // Redirect to Signin page
+    }
+  }, []);
+
   return (
     <div className="profileContainer">
       <NavigationBar />

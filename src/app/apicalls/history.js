@@ -4,13 +4,13 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL || "http://l
 
 const getAuthToken = () => localStorage.getItem("authToken");
 
-export const fetchHistoryPhotosById = async (user) => {
+export const fetchHistoryPhotosById = async () => {
     try {
         const token = getAuthToken();
         if (!token) {
             throw new Error("No authentication token found");
         }
-        const response = await axios.get(`${API_BASE_URL}/users/${user._id}/get-photo-history`, {
+        const response = await axios.get(`${API_BASE_URL}/users/get-photo-history`, {
             headers: {
                 Authorization: `Bearer ${token}`, // Attach JWT token in Authorization header
             },

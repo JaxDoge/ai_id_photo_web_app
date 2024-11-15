@@ -36,7 +36,7 @@ const Page = () => {
           element={
             <>
               <Navigation />
-              <UserProfileHistoryPage users={[]} />
+              <UserProfileHistoryPage />
             </>
           }
         />

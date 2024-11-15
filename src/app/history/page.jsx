@@ -2,18 +2,12 @@
 
 import "./historyPage.css";
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Link from 'next/link';
 import { getLoggedInUserDetails } from "../apicalls/users";
 import { fetchHistoryPhotosById } from "../apicalls/history"; 
-import { useParams } from "next/navigation";
 import NavigationBar from "../NavigationBar/navigation";
 
-const UserProfileHistoryPage = ({ users }) => {
-    const { userId } = useParams();
-    const API_BASE_URL = process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL || "http://localhost:4000";
-    const HISTORY_API_URL = `${API_BASE_URL}/users/${userId}/get-photo-history`;
-    
+const UserProfileHistoryPage = () => { 
     const [userData, setUserData] = useState("");
     const [photos, setPhotos] = useState([]);
     const [currentDate, setCurrentDate] = useState("");
@@ -38,27 +32,39 @@ const UserProfileHistoryPage = ({ users }) => {
         setCurrentDate(today.toLocaleDateString("en-US", options));
     }, []);
 
-
-    const [existingImages, setExistingImages] = useState([]);
-
     useEffect(() => {
-        const imgUrls = Array.from({ length: 10 }).map((_, index) => `/images/ToBeDelete/h${index + 1}.png`);
-        
-        // Checking each image if exists or not
-        Promise.all(
-            imgUrls.map((url) =>
-                new Promise((resolve) => {
-                    const img = new Image();
-                    img.src = url;
-                    img.onload = () => resolve(url);
-                    img.onerror = () => resolve(null);
-                })
-            )
-        ).then((results) => {
-            // Filter not existing images right here
-            setExistingImages(results.filter((url) => url !== null));
-        });
+        async function loadPhotos() {
+            try {
+                const historyResponse = await fetchHistoryPhotosById();
+                setPhotos(historyResponse.data);
+            } catch (error) {
+                console.error("Error loading user data or history:", error);
+            }
+        }
+        loadPhotos();
     }, []);
+
+
+    // const [existingImages, setExistingImages] = useState([]);
+
+    // useEffect(() => {
+    //     const imgUrls = Array.from({ length: 10 }).map((_, index) => `/images/ToBeDelete/h${index + 1}.png`);
+        
+    //     // Checking each image if exists or not
+    //     Promise.all(
+    //         imgUrls.map((url) =>
+    //             new Promise((resolve) => {
+    //                 const img = new Image();
+    //                 img.src = url;
+    //                 img.onload = () => resolve(url);
+    //                 img.onerror = () => resolve(null);
+    //             })
+    //         )
+    //     ).then((results) => {
+    //         // Filter not existing images right here
+    //         setExistingImages(results.filter((url) => url !== null));
+    //     });
+    // }, []);
 
     // Download single image function
     function downloadImage(url) {
@@ -73,9 +79,9 @@ const UserProfileHistoryPage = ({ users }) => {
     // Download all function
     function downloadAllImages() {
         if (window.confirm("Are you sure you want to download all images?")) {
-            existingImages.forEach((url, index) => {
+            photos.forEach((photo, index) => {
                 setTimeout(() => {
-                    downloadImage(url);
+                    downloadImage(photo.url);
                 }, index * 500); // Avoiding download all at the same time (debug unstopable pop-up window)
             });
         }
@@ -109,20 +115,19 @@ const UserProfileHistoryPage = ({ users }) => {
                     <div className="contentBody">
                         <div className="profileInfo">
                             <img
-                                src="/images/ToBeDelete/portrait.png"
+                                src={userData?.avatar || "/images/avatar-default.png"}
                                 alt="Profile"
                                 className="profileImage"
                             />
                             <div className="userInfo">
                                 {/* switching here to user_first_name and user_last_name and email */}
                                 <h2 className="profileName">
-                                    Amanda Rawles
+                                    {userData?.firstName} {userData?.lastName}
                                     {/* {user.user_first_name} {user.user_last_name} */}
                                 </h2>
 
                                 <Link href="/profile" className="profileEmail">
-                                    amandarawles@gmail.com
-                                    {/* {user.user_email} */}
+                                    {userData?.email}
                                 </Link>
                             </div>
                             <button className="downloadButton" onClick={downloadAllImages}>
@@ -134,15 +139,16 @@ const UserProfileHistoryPage = ({ users }) => {
                     <div className="bottomSection">
                         <h3 className="historyTitle">ID Photo History</h3>
                         <div className="photoGrid">
-                            {existingImages.map((url, index) => (
+                            {photos.map((photo, index) => (
                                 <div key={index} className="photoItem">
                                     <img
-                                        src={url}
+                                        src={photo.url}
                                         alt={`Photo ${index + 1}`}
                                         className="photoImage"
                                         onError={(e) => {
                                             // Hidding not existing figures
-                                            e.target.closest('.photoItem').style.display = 'none';
+                                            // e.target.closest('.photoItem').style.display = 'none';
+                                            e.target.src = "/images/default-placeholder.png";
                                         }}
                                     />
                                     <div className="overlay">
