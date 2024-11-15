@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { signInUser, googleSignIn } from "../apicalls/users";
+import { UserContext } from "../../contexts/UserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import styles from "./SignIn.module.css";
@@ -14,6 +15,7 @@ const SignIn = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const { setUser } = useContext(UserContext); 
 
   useEffect(() => {
     // Check if an email is saved in localStorage and pre-fill the input if so
@@ -30,6 +32,11 @@ const SignIn = () => {
 
     try {
       const userData = await signInUser(email, password);
+      const token = userData.data; 
+      console.log("Token received from backend:", token);
+      // Set the user data in context
+      setUser(userData.data);
+
       // Store the token based on "Remember Me" selection
       if (rememberMe) {
         localStorage.setItem("savedEmail", email);
@@ -38,6 +45,7 @@ const SignIn = () => {
       }
       // handle successful login
       console.log("Signed in successfully:", userData);
+      localStorage.setItem("authToken", userData.data);
       router.push("/generator"); // Redirect to the homepage
     } catch (err) {
       setError("Invalid email or password");
@@ -48,7 +56,11 @@ const SignIn = () => {
     const idToken = response.credential;
     try {
       // Send token to backend
-      await googleSignIn(idToken);
+      const userData = await googleSignIn(idToken);
+
+      // Set the user data in context
+      setUser(userData.data);
+
       console.log("Google sign-in successful");
       router.push("/generator"); // Redirect after sign-in
     } catch (error) {
