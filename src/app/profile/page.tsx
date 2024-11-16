@@ -105,17 +105,7 @@ export default function ProfilePage() {
 
     return (
         <div className="profilePageWrapper">
-            <aside className="leftSidebar">
-                <button className="icon" onClick={() => router.push('/generator')}>
-                    <i className="fas fa-house" />
-                </button>
-                <button className="icon active" onClick={() => router.push('/profile')}>
-                    <i className="fa-solid fa-grip" />
-                </button>
-                <button className="icon" onClick={() => router.push('/history')}>
-                    <i className="fas fa-file-alt" />
-                </button>
-            </aside>
+            <NavigationBar />
 
             <div className="profileContent">
                 <header className="pageHeader">
