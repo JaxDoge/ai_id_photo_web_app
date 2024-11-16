@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
+import { getLoggedInUserDetails } from "../apicalls/users";
 import NavigationBar from "../NavigationBar/navigation.js";
 import "./generator.css";
 import axios from "axios";
+import { toast } from 'react-hot-toast';
 
 const baseApiUrl = process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL;
 
@@ -80,24 +82,57 @@ export default function GeneratorPage() {
   const [showCustomColorInput, setShowCustomColorInput] = useState(false);
 
   const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [userData, setUserData] = useState<any>(null);
+
   useEffect(() => {
+    // Check authentication
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      toast.error('Please login to access the generator', {
+        duration: 3000,
+        position: 'top-center',
+        style: {
+          background: '#F87171',
+          color: '#fff',
+          padding: '16px',
+        },
+      });
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
+      return;
+    }
+
+    // Load user data after authentication passes
+    loadUserData();
+  }, []);
+
+  useEffect(() => {    
+    // Load example images
     const imgUrls = Array.from({ length: 10 }).map((_, index) => `/images/exampleImage/test${index + 1}.jpg`);
     
-    // Checking each image if exists or not
     Promise.all(
-        imgUrls.map((url) =>
-            new Promise((resolve) => {
-                const img = new Image();
-                img.src = url;
-                img.onload = () => resolve(url);
-                img.onerror = () => resolve(null);
-            })
-        )
+      imgUrls.map((url) =>
+        new Promise((resolve) => {
+          const img = new Image();
+          img.src = url;
+          img.onload = () => resolve(url);
+          img.onerror = () => resolve(null);
+        })
+      )
     ).then((results) => {
-        // Filter not existing images right here
-        setExistingImages(results.filter((url) => url !== null) as string[]);
+      setExistingImages(results.filter((url) => url !== null) as string[]);
     });
-  }, []);
+  }, [userData]);
+
+  const loadUserData = async () => {
+    try {
+      const userResponse = await getLoggedInUserDetails();
+      setUserData(userResponse.data);
+    } catch (error) {
+      console.error("Error loading user data for generator:", error);
+    }
+  }
 
   const handleFile = (file: File) => {
     const MAX_SIZE = 50 * 1024 * 1024; // 50MB in bytes
@@ -164,23 +199,7 @@ export default function GeneratorPage() {
       const formData = new FormData();
       formData.append('image', selectedImage);
       formData.append('params', JSON.stringify(params));
-
-      // Log the parameters and image details
-      console.log('Generation Parameters:', {
-        params,
-        imageDetails: {
-          name: selectedImage.name,
-          type: selectedImage.type,
-          size: `${(selectedImage.size / (1024 * 1024)).toFixed(2)} MB`
-        }
-      });
-      // Log FormData entries (for debugging)
-      Array.from(formData.entries()).forEach(([key, value]) => {
-        console.log(`${key}:`, value instanceof File ? {
-          name: value.name,
-          type: value.type
-        } : value);
-      });
+      formData.append('user_id', userData._id);
 
       const response = await axios.post(`${baseApiUrl}/photo/process`, formData, {
         headers: {
@@ -216,12 +235,7 @@ export default function GeneratorPage() {
     }
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      router.push("/signin"); // Redirect to Signin page
-    }
-  }, []);
+
 
   return (
     <div className="profileContainer">
