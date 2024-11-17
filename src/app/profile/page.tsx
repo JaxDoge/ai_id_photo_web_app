@@ -104,16 +104,13 @@ export default function ProfilePage() {
     };
 
     return (
-        <div className="profilePageWrapper">
-            <NavigationBar />
-
-            <div className="profileContent">
-                <header className="pageHeader">
+            <div className="profileContainer">
+                <NavigationBar />
+                <main className="mainContent">
+                    <header className="pageHeader">
                     <h1 className="welcomeMessage">Welcome, {userData.firstName || "User"}</h1>
                     <p className="date">{currentDate}</p>
                 </header>
-
-                <main className="profileContainer">
                     <div className="middleSection">
                         <div className="colorBar"></div>
                         <div className="contentBody">
@@ -208,6 +205,5 @@ export default function ProfilePage() {
                     </div>
                 </main>
             </div>
-        </div>
     );
 }

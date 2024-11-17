@@ -1,12 +1,10 @@
 // components/NavigationBar.js
 import React from "react";
 import Link from "next/link"; // Use Next.js's Link component
-import { useRouter } from 'next/compat/router'
 import { usePathname } from 'next/navigation'
 import "./navigation.css";
 
 const NavigationBar = () => {
-    const router = useRouter(); // Get the current route
     const pathname = usePathname(); // Get the current pathname
 
     return (
