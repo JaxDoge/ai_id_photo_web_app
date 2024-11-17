@@ -108,3 +108,8 @@ export const updateUser = async (userData) => {
     throw error.response ? error.response.data : error;
   }
 };
+
+export const signoutUser = async() => {
+  localStorage.removeItem("authToken");
+  console.log("Sign out successfully");
+};

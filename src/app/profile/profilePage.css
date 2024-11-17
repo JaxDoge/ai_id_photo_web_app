@@ -308,3 +308,21 @@
 .editButton:hover {
     background-color: #2563eb;
 }
+
+.signout {
+    width: 100%;
+    padding: 12px;
+    background-color: #3b82f6;
+    color: #fff;
+    border-radius: 6px;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.signout:hover {
+    background-color: #2563eb;
+}

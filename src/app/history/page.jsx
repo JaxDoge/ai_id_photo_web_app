@@ -46,7 +46,7 @@ const UserProfileHistoryPage = () => {
                 const avatarResponse = await getLoggedInUserDetails();
                 console.log("Avatar response:", avatarResponse);
                 if (avatarResponse && avatarResponse.data && avatarResponse.data.avatar) {
-                    setAvatarUrl(avatarResponse.data.avatar); // 设置 avatar URL
+                    setAvatarUrl(avatarResponse.data.avatar); // Set avatar URL
                 }
             } catch (error) {
                 console.error("Error fetching user details:", error);

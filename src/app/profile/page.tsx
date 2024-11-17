@@ -7,10 +7,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import "./profilePage.css";
 import NavigationBar from "../NavigationBar/navigation";
-import { getLoggedInUserDetails, updateUser } from "../../app/apicalls/users.js"; // 引入 API 方法
+import { getLoggedInUserDetails, signoutUser, updateUser } from "../../app/apicalls/users.js"; // 引入 API 方法
 import { fetchHistoryPhotosById } from "../../app/apicalls/history.js"; // 引入 fetchHistoryPhotosById
+import { sign } from "crypto";
 
 export default function ProfilePage() {
+    const BASE_API = process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL || "http://localhost:4000";
     const router = useRouter();
     const [currentDate, setCurrentDate] = useState("");
     const [isEditing, setIsEditing] = useState(false);
@@ -29,6 +31,25 @@ export default function ProfilePage() {
         gender: "",
         country: ""
     });
+
+    const [avatarUrl, setAvatarUrl] = useState("");
+
+    // Load avatar URL on mount
+    useEffect(() => {
+        const fetchAvatar = async () => {
+            try {
+                const avatarResponse = await getLoggedInUserDetails();
+                console.log("Avatar response:", avatarResponse);
+                if (avatarResponse && avatarResponse.data && avatarResponse.data.avatar) {
+                    setAvatarUrl(avatarResponse.data.avatar); // Set the avatar URL
+                }
+            } catch (error) {
+                console.error("Error fetching user details:", error);
+            }
+        };
+
+        fetchAvatar();
+    }, []);
 
     useEffect(() => {
         const today = new Date();
@@ -103,6 +124,12 @@ export default function ProfilePage() {
         }
     };
 
+    const handleSignout = () => {
+        signoutUser();
+        router.push("/signIn");
+    }
+    
+
     return (
             <div className="profileContainer">
                 <NavigationBar />
@@ -116,7 +143,7 @@ export default function ProfilePage() {
                         <div className="contentBody">
                             <div className="profileInfo">
                                 <img
-                                    src={userData.avatar || "../../images/exampleImage/avatar.png"}
+                                    src={avatarUrl || "../../images/exampleImage/avatar.png"}
                                     alt="Profile"
                                     className="profileImage"
                                 />
@@ -202,6 +229,11 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div>
+                    <button className="signout" onClick={handleSignout}>
+                        <p>Signout</p>
+                    </button>
                     </div>
                 </main>
             </div>
