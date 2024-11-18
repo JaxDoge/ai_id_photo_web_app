@@ -46,7 +46,7 @@ const SignIn = () => {
       // handle successful login
       console.log("Signed in successfully:", userData);
       localStorage.setItem("authToken", userData.data);
-      router.push("/generator"); // Redirect to the homepage
+      router.push("/landingPage"); // Redirect to the homepage
     } catch (err) {
       setError("Invalid email or password");
     }
@@ -64,7 +64,7 @@ const SignIn = () => {
       // Store the token in local storage
       localStorage.setItem("authToken", userData.token);
       console.log("Google sign-in successful", userData.token);
-      router.push("/generator"); // Redirect after sign-in
+      router.push("/landingPage"); // Redirect after sign-in
     } catch (error) {
       console.error("Google sign-in error:", error);
     }

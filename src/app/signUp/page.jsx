@@ -40,10 +40,7 @@ const SignUp = () => {
 
       console.log("Account created successfully:", newUserData);
       // Show alert message on successful signup
-      alert(
-        "Account created successfully! You will be redirected to the sign-in page."
-      );
-      router.push("/signIn"); // Redirect to login page after signup
+      router.push("/landingPage"); // Redirect to login page after signup
     } catch (err) {
       setError("Error creating account. Please try again.");
     }
@@ -61,7 +58,7 @@ const SignUp = () => {
       // Store the token in local storage
       localStorage.setItem("authToken", userData.token);
       console.log("Google sign-in successful", userData.token);
-      router.push("/generator"); // Redirect after sign-in
+      router.push("/landingPage"); // Redirect after sign-in
     } catch (error) {
       console.error("Google sign-in error:", error);
     }

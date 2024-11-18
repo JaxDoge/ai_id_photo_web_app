@@ -83,31 +83,21 @@ export default function GeneratorPage() {
 
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [userData, setUserData] = useState<any>(null);
-
+  const [currentDate, setCurrentDate] = useState("");
   useEffect(() => {
-    // Check authentication
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      toast.error('Please login to access the generator', {
-        duration: 3000,
-        position: 'top-center',
-        style: {
-          background: '#F87171',
-          color: '#fff',
-          padding: '16px',
-        },
-      });
-      setTimeout(() => {
-        router.push("/");
-      }, 2000);
-      return;
-    }
-
-    // Load user data after authentication passes
+    // Load user data
     loadUserData();
-  }, []);
 
-  useEffect(() => {    
+    // Set the current date
+    const today = new Date();
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'short' as const, 
+      day: 'numeric' as const, 
+      month: 'long' as const, 
+      year: 'numeric' as const 
+    };
+    setCurrentDate(today.toLocaleDateString("en-US", options));
+
     // Load example images
     const imgUrls = Array.from({ length: 10 }).map((_, index) => `/images/exampleImage/test${index + 1}.jpg`);
     
@@ -123,7 +113,7 @@ export default function GeneratorPage() {
     ).then((results) => {
       setExistingImages(results.filter((url) => url !== null) as string[]);
     });
-  }, [userData]);
+  }, []);
 
   const loadUserData = async () => {
     try {
@@ -245,9 +235,10 @@ export default function GeneratorPage() {
         <div className="w-full max-w-7xl">
           <div className="max-w-6xl mx-auto space-y-6">
             {/* Header */}
-            <h1 className="text-3xl font-bold text-center text-foreground">
-              ID PHOTO GENERATOR
-            </h1>
+            <div className="topSection">
+              <h1 className="welcomeMessage">Welcome, {userData?.firstName}</h1>
+              <p className="date">{currentDate}</p>
+            </div>
 
             {/* Main content grid - Image Upload and Preview */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

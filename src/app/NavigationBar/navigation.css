@@ -39,3 +39,7 @@
 .icon.active i {
     color: #3885e9;
 }
+
+.leftSidebar .spacer {
+    height: 80px;  /* Adjust this value to get the desired spacing */
+}

@@ -16,11 +16,12 @@ export const signInUser = async (email, password) => {
 
     // the backend returns the token in response.data.token
     const token = response.data.token;
-
-    // Store the token in localStorage
+    
+    // Store token in both cookie and localStorage
+    document.cookie = `authToken=${token}; path=/; max-age=2592000`; // 30 days
     localStorage.setItem("authToken", token);
 
-    return response.data; // Return user data, token, or other relevant info
+    return response.data;
   } catch (error) {
     console.error("Error during sign-in:", error);
     throw error.response ? error.response.data : error;
@@ -111,5 +112,6 @@ export const updateUser = async (userData) => {
 
 export const signoutUser = async() => {
   localStorage.removeItem("authToken");
+  document.cookie = "authToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
   console.log("Sign out successfully");
 };

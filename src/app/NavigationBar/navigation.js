@@ -9,10 +9,10 @@ const NavigationBar = () => {
 
     return (
         <aside className="leftSidebar">
+            <div className="spacer" />
             <Link href="/generator" passHref>
-                <div className={`icon ${pathname === "/generator" ? "active" : ""}`}
-                style={{ marginTop: 100 }}>
-                    <i className="fas fa-house" />
+                <div className={`icon ${pathname === "/generator" ? "active" : ""}`}>
+                    <i className="fas fa-wand-magic-sparkles" />
                 </div>
             </Link>
             <Link href="/profile" passHref>

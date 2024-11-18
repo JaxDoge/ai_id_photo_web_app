@@ -8,15 +8,18 @@ import UserProfilePage from "./profile/page";
 import UserProfileHistoryPage from "./history/page";
 import Navigation from "./NavigationBar/navigation";
 import { UserProvider } from "../contexts/UserContext";
+import LandingPage from "./landingPage/page";
 
 const Page = () => {
-  const pathname = usePathname(); 
-  const [currentPage, setCurrentPage] = useState(<SignIn />);
+  const pathname = usePathname();
+  const [currentPage, setCurrentPage] = useState(<LandingPage />);
 
   useEffect(() => {
-    // Update the current page based on the path
     const renderPage = () => {
       switch (pathname) {
+        case "/":
+        case "/landingPage":
+          return <LandingPage />;
         case "/generator":
           return (
             <>
@@ -38,13 +41,15 @@ const Page = () => {
               <UserProfileHistoryPage />
             </>
           );
-        default:
+        case "/signIn":
           return <SignIn />;
+        default:
+          return <LandingPage />;
       }
     };
 
     setCurrentPage(renderPage());
-  }, [pathname]); 
+  }, [pathname]);
 
   return <UserProvider>{currentPage}</UserProvider>;
 };
