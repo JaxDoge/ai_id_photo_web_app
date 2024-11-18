@@ -1,5 +1,5 @@
-.profileContainer {
+.generatorContainer {
     display: flex;
-    height: 110vh;
+    min-height: 120vh;
     background-color: #f1f4f7;
 }

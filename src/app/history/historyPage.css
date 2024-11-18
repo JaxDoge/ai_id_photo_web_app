@@ -1,7 +1,8 @@
 .profileContainer {
     display: flex;
     width: 100%;
-    height: 110vh;
+    height: 100vh;
+    min-height: 100vh;
     background-color: #f1f4f7;
 }
 
@@ -11,6 +12,10 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    row-gap: 1.5rem;
 }
 
 .topSection {
@@ -35,6 +40,7 @@
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    justify-content: center;
 }
 
 .colorBar {
