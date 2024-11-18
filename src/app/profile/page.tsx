@@ -74,6 +74,17 @@ export default function ProfilePage() {
         }
     };
 
+    const handleCancel = () => {
+        // Reset updatedUser to current userData values
+        setUpdatedUser({
+            firstName: userData.firstName || "",
+            lastName: userData.lastName || "",
+            gender: userData.gender || "",
+            country: userData.country || "",
+        });
+        setIsEditing(false);
+    };
+
     const handleSave = async () => {
         try {
             const response = await updateUser(updatedUser);
@@ -128,6 +139,11 @@ export default function ProfilePage() {
                             <button className="editButton" onClick={handleEditClick}>
                                 {isEditing ? "Save" : "Edit"}
                             </button>
+                            {isEditing && (
+                                <button className="cancelButton" onClick={handleCancel}>
+                                    Cancel
+                                </button>
+                            )}
                         </div>
 
                         <div className="editFields">
