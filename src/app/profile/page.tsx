@@ -7,10 +7,11 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import "./profilePage.css";
 import NavigationBar from "../NavigationBar/navigation";
-import { getLoggedInUserDetails, updateUser } from "../apicalls/users"; // Adjusted import path
+import { getLoggedInUserDetails, updateUser, signoutUser} from "../apicalls/users"; // Adjusted import path
 import { fetchHistoryPhotosById } from "../apicalls/history"; // Adjusted import path
 
 export default function ProfilePage() {
+    const BASE_API = process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL || "http://localhost:4000";
     const router = useRouter();
     const [currentDate, setCurrentDate] = useState("");
     const [isEditing, setIsEditing] = useState(false);
@@ -56,30 +57,6 @@ export default function ProfilePage() {
                 } else {
                     console.error("Failed to fetch user details:", response.message);
                 }
-
-                // Get user's photo history
-                const photosResponse = await fetchHistoryPhotosById();
-                if (photosResponse.success) {
-                    const photos = photosResponse.data;
-
-                    // If there are photos, use the latest one as avatar
-                    if (photos && photos.length > 0) {
-                        // Assuming the latest photo is at the end of the array
-                        const latestPhoto = photos[photos.length - 1];
-                        setUserData(prevData => ({
-                            ...prevData,
-                            avatar: latestPhoto.url
-                        }));
-                    } else {
-                        // If no photos, use default avatar
-                        setUserData(prevData => ({
-                            ...prevData,
-                            avatar: "/images/avatar-default.png"
-                        }));
-                    }
-                } else {
-                    console.error("Failed to fetch photo history:", photosResponse.message);
-                }
             } catch (error) {
                 console.error("Failed to fetch user details or photos:", error);
             }
@@ -118,6 +95,11 @@ export default function ProfilePage() {
         }
     };
 
+    const handleSignout = () => {
+        signoutUser();
+        router.push("/signIn");
+    }
+
     return (
         <div className="profileContainer">
             <NavigationBar />
@@ -131,7 +113,7 @@ export default function ProfilePage() {
                     <div className="contentBody">
                         <div className="profileInfo">
                             <img
-                                src={userData.avatar || "/images/avatar-default.png"}
+                                src={"/images/avatar-default.png"}
                                 alt="Profile"
                                 className="profileImage"
                             />
@@ -219,6 +201,9 @@ export default function ProfilePage() {
                         </div>
                     </div>
                 </div>
+                <button className="signout" onClick={handleSignout}>
+                    <p>Signout</p>
+                </button>
             </main>
         </div>
     );
