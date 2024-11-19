@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useRouter } from 'next/navigation';
 import { getLoggedInUserDetails } from "../apicalls/users";
 import NavigationBar from "../NavigationBar/navigation.js";
 import "./generator.css";
 import axios from "axios";
-import { toast } from 'react-hot-toast';
 
 const baseApiUrl = process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL;
 
@@ -44,6 +42,8 @@ type BackgroundColor = (typeof BACKGROUND_COLORS)[keyof typeof BACKGROUND_COLORS
 type RenderMode = (typeof RENDER_MODES)[number]['mode'];
 type PresetSize = (typeof PRESET_SIZES)[number]['value'];
 
+type ParamValue = string | number | null | BackgroundColor | RenderMode | PresetSize | SizeType;
+
 interface GeneratorParams {
   face_detect_model: string;
   human_matting_model: string;
@@ -55,8 +55,12 @@ interface GeneratorParams {
   width?: number;
 }
 
+interface MinimalUserData {
+  _id: string;
+  firstName: string;
+}
+
 export default function GeneratorPage() {
-  const router = useRouter();
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -82,8 +86,9 @@ export default function GeneratorPage() {
   const [showCustomColorInput, setShowCustomColorInput] = useState(false);
 
   const [existingImages, setExistingImages] = useState<string[]>([]);
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<MinimalUserData | null>(null);
   const [currentDate, setCurrentDate] = useState("");
+  
   useEffect(() => {
     // Load user data
     loadUserData();
@@ -171,7 +176,7 @@ export default function GeneratorPage() {
     fileInputRef.current?.click();
   };
 
-  const handleParamChange = (key: keyof GeneratorParams, value: any) => {
+  const handleParamChange = (key: keyof GeneratorParams, value: ParamValue) => {
     setParams(prev => ({ ...prev, [key]: value }));
   };
 
@@ -189,7 +194,7 @@ export default function GeneratorPage() {
       const formData = new FormData();
       formData.append('image', selectedImage);
       formData.append('params', JSON.stringify(params));
-      formData.append('user_id', userData._id);
+      formData.append('user_id', userData?._id || '');
 
       const response = await axios.post(`${baseApiUrl}/photo/process`, formData, {
         headers: {

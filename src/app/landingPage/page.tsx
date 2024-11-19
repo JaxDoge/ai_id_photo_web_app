@@ -63,13 +63,13 @@ const LandingPage = () => {
         </div>
         <div className={styles.heroImage}>
           {/* Add your hero image here */}
-          {/* <Image 
-            src="/hero-image.png"
+          <Image 
+            src="/images/hero-image.jpeg"
             alt="AI ID Photo Demo"
             width={600}
             height={400}
             priority
-          /> */}
+          />
         </div>
       </main>
     </div>

@@ -8,10 +8,9 @@ import Link from 'next/link';
 import "./profilePage.css";
 import NavigationBar from "../NavigationBar/navigation";
 import { getLoggedInUserDetails, updateUser, signoutUser} from "../apicalls/users"; // Adjusted import path
-import { fetchHistoryPhotosById } from "../apicalls/history"; // Adjusted import path
 
 export default function ProfilePage() {
-    const BASE_API = process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL || "http://localhost:4000";
+    // const BASE_API = process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL || "http://localhost:4000";
     const router = useRouter();
     const [currentDate, setCurrentDate] = useState("");
     const [isEditing, setIsEditing] = useState(false);

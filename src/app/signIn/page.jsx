@@ -48,7 +48,7 @@ const SignIn = () => {
       localStorage.setItem("authToken", userData.data);
       router.push("/landingPage"); // Redirect to the homepage
     } catch (err) {
-      setError("Invalid email or password");
+      setError("Invalid email or password, error: " + err);
     }
   };
 

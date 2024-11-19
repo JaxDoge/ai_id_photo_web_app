@@ -42,7 +42,7 @@ const SignUp = () => {
       // Show alert message on successful signup
       router.push("/landingPage"); // Redirect to login page after signup
     } catch (err) {
-      setError("Error creating account. Please try again.");
+      setError("Error creating account. Please try again. Error: " + err);
     }
   };
 
