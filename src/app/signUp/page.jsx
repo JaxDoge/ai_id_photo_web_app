@@ -54,7 +54,7 @@ const SignUp = () => {
       // Clear previous user data
       setUser(null);
       // Set the user data in context
-      setUser(userData.data);
+      setUser(userData);
       // Store the token in local storage
       localStorage.setItem("authToken", userData.token);
       console.log("Google sign-in successful", userData.token);

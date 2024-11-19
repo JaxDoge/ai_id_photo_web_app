@@ -81,6 +81,13 @@ export const googleSignIn = async (idToken) => {
     const response = await axios.post(`${API_BASE_URL}/users/google-signin`, {
       idToken,
     });
+    // the backend returns the token in response.data.token
+    const token = response.data.token;
+    
+    // Store token in both cookie and localStorage
+    document.cookie = `authToken=${token}; path=/; max-age=2592000`; // 30 days
+    localStorage.setItem("authToken", token);
+    
     return response.data;
   } catch (error) {
     console.error("Error during Google Sign-In:", error);
