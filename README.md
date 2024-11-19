@@ -1,28 +1,56 @@
+# AI ID Photo Web App
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
 First, run the development server:
+
 1. Clone the repository
+
    ```bash
    git clone [repository-url]
    cd ai_id_photo_web_app
    ```
 
 2. Install dependencies
+
    ```bash
    npm install
    ```
 
-3. Start development server
+3. Configure backend connection
+   Create a `.env.development` file in the root directory:
+
+   ```txt
+   NEXT_PUBLIC_REACT_APP_BASE_API_URL=http://localhost:4000  # For local backend
+   NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id
+   ...
+   # or
+   NEXT_PUBLIC_REACT_APP_BASE_API_URL=https://ai-id-photo-backend-api.fly.dev:4000  # For remote backend
+   NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id
+   ...
+   ```
+
+4. Start localdevelopment server
+
+    For local backend:
+
     ```bash
-        npm run dev
-        # or
-        yarn dev
-        # or
-        pnpm dev
-        # or
-        bun dev
+    npm run dev
+    # or
+    yarn dev
+    # or
+    pnpm dev
+    # or
+    bun dev
+    ```
+
+    For remote backend:
+
+    ```bash
+    npm run build
+    npm run start
     ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
