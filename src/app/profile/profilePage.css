@@ -329,7 +329,7 @@
 
 .cancelButton {
     padding: 8px 16px;
-    background-color: #7e80846d;
+    background-color: #7e8084c3;
     color: white;
     border: none;
     border-radius: 4px;
@@ -338,5 +338,5 @@
 }
 
 .cancelButton:hover {
-    background-color: #d1d5db4a;
+    background-color: #dd3737;
 }
