@@ -7,13 +7,15 @@
 }
 
 .mainContent {
+    margin-top: 30px;
     flex: 1;
     padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 20px;
     max-width: 80rem;
-    margin-left: 50px;
+    padding-left: 80px;
+    margin-left: auto;
     margin-right: auto;
     row-gap: 1.5rem;
 }

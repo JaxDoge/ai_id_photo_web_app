@@ -236,9 +236,9 @@ export default function GeneratorPage() {
     <div className="generatorContainer">
       <NavigationBar />
 
-      <div className="min-h-screen bg-background p-8 flex-1 flex justify-center" style={{backgroundColor: "#f1f4f7", marginLeft: 50}}>
-        <div className="w-full">
-          <div className="max-w-7xl mx-auto space-y-6">
+      {/* <div className="" style={{backgroundColor: "#f1f4f7"}}> */}
+        {/* <div className="w-full"> */}
+          <main className="mainContent">
             {/* Header */}
             <div className="topSection">
               <h1 className="welcomeMessage">Welcome, {userData?.firstName}</h1>
@@ -589,9 +589,9 @@ export default function GeneratorPage() {
                       
             </div>
 
-          </div>
-        </div>
-      </div>
+          </main>
+        {/* </div> */}
+      {/* </div> */}
 
     </div>
   );

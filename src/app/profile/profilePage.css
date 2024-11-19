@@ -48,12 +48,17 @@
 }
 
 .mainContent {
+    margin-top: 30px;
     flex: 1;
-    padding: 20px; /* 增加外部间距 */
+    padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    margin-left: 50px;
+    max-width: 80rem;
+    padding-left: 80px;
+    margin-left: auto;
+    margin-right: auto;
+    row-gap: 1.5rem;
 }
 
 .topSection {
