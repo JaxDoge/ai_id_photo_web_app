@@ -236,7 +236,7 @@ export default function GeneratorPage() {
     <div className="generatorContainer">
       <NavigationBar />
 
-      <div className="min-h-screen bg-background p-8 flex-1 flex justify-center" style={{backgroundColor: "#f1f4f7"}}>
+      <div className="min-h-screen bg-background p-8 flex-1 flex justify-center" style={{backgroundColor: "#f1f4f7", marginLeft: 50}}>
         <div className="w-full">
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}

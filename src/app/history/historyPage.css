@@ -13,7 +13,7 @@
     flex-direction: column;
     gap: 20px;
     max-width: 80rem;
-    margin-left: auto;
+    margin-left: 50px;
     margin-right: auto;
     row-gap: 1.5rem;
 }
