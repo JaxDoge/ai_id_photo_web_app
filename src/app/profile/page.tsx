@@ -176,6 +176,7 @@ export default function ProfilePage() {
                                 <div>
                                     <label className="fieldLabel">Gender</label>
                                     <select
+                                        data-testid="gender-select"
                                         className="inputField genderSelect"
                                         value={updatedUser.gender}
                                         onChange={(e) =>
@@ -192,6 +193,7 @@ export default function ProfilePage() {
                                 <div>
                                     <label className="fieldLabel">Country</label>
                                     <input
+                                        data-testid="country-input"
                                         type="text"
                                         placeholder="Your Country"
                                         className="inputField"
