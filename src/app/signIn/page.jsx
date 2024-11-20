@@ -155,7 +155,7 @@ const SignIn = () => {
             </div>
 
             {error && <p className={styles.error}>{error}</p>}
-            <button type="submit" className={styles.loginButton}>
+            <button data-testid="login-button" type="submit" className={styles.loginButton}>
               Login
             </button>
           </form>

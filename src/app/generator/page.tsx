@@ -263,6 +263,7 @@ export default function GeneratorPage() {
                   style={{ cursor: 'pointer' }}
                 >
                   <input
+                    data-testid="file-input"
                     ref={fileInputRef}
                     type="file"
                     className="hidden"
