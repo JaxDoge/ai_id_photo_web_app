@@ -47,6 +47,22 @@ This file contains test cases designed for the various components of the project
   2. Send updated user data in the request body.
 - **Expected Result**: The user data is updated in the database and reflected in the response.
 
+### b) AWS S3 Uploads
+**Test Case 1**: Validate the upload to S3 functionality.
+- **Endpoint**: Utility Function `uploadToS3`
+- **Steps**:
+  1. Provide a valid file buffer and user ID to the function.
+  2. Mock the AWS S3 instance to simulate a successful upload.
+  3. Verify that the function returns the correct S3 URL.
+- **Expected Result**: The function returns the correct URL of the uploaded file in S3.
+
+**Test Case 2**: Validate error handling for failed S3 uploads.
+- **Endpoint**: Utility Function `uploadToS3`
+- **Steps**:
+  1. Provide invalid file buffer or mock an S3 failure.
+  2. Verify that the function throws the appropriate error.
+- **Expected Result**: The function throws an error with the message "Failed to upload image to S3".
+
 ---
 
 ## 3. Database Test Cases
@@ -99,6 +115,21 @@ This file contains test cases designed for the various components of the project
   2. Ensure the returned token is valid and decodable.
 - **Expected Result**: The token contains the correct user ID.
 
+**Test Case 3**: Test S3 upload functionality.
+- **Function**: `uploadToS3(fileBuffer, userId)`
+- **Steps**:
+  1. Mock AWS S3 instance to return a resolved promise with a URL.
+  2. Call the function with a valid file buffer and user ID.
+  3. Verify that the function returns the correct URL.
+- **Expected Result**: The function successfully returns the S3 URL.
+
+**Test Case 4**: Test error handling for failed S3 uploads.
+- **Function**: `uploadToS3(fileBuffer, userId)`
+- **Steps**:
+  1. Mock AWS S3 instance to return a rejected promise.
+  2. Call the function and verify that it throws an error with the correct message.
+- **Expected Result**: The function throws "Failed to upload image to S3".
+
 ---
 
 ## 6. End-to-End Testing
@@ -116,4 +147,3 @@ This file contains test cases designed for the various components of the project
 - Ensure all test cases are run in a clean environment.
 - Use Postman for manual API testing and tools like Jest/Mocha for automated tests.
 - Document all test results for debugging and improvement purposes.
-
