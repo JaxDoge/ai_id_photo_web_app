@@ -130,10 +130,10 @@ export default function GeneratorPage() {
   }
 
   const handleFile = (file: File) => {
-    const MAX_SIZE = 50 * 1024 * 1024; // 50MB in bytes
+    const MAX_SIZE = 150 * 1024; // 150KB in bytes
     
     if (file.size > MAX_SIZE) {
-      alert("File size must be less than 50MB");
+      alert("File size must be less than 150KB");
       return;
     }
     
