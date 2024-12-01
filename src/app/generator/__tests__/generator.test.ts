@@ -1,8 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import GeneratorPage from '../page';
 import { getLoggedInUserDetails } from '../../apicalls/users';
-import axios from 'axios';
 
 // Mocking API calls and other dependencies
 jest.mock('../../apicalls/users', () => ({
@@ -10,7 +9,6 @@ jest.mock('../../apicalls/users', () => ({
 }));
 
 jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('GeneratorPage', () => {
     beforeEach(() => {

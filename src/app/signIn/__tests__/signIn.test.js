@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import SignIn from "../page";
 import { UserContext } from "../../../contexts/UserContext";
-import { signInUser, googleSignIn } from "../../apicalls/users";
+import { signInUser } from "../../apicalls/users";
 import { useRouter } from "next/navigation";
 
 jest.mock("../../apicalls/users", () => ({

@@ -3,8 +3,6 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import UserProfileHistoryPage from "../page";
 import { getLoggedInUserDetails } from "../../apicalls/users";
 import { fetchHistoryPhotosById } from "../../apicalls/history";
-import { saveAs } from "file-saver";
-import JSZip from "jszip";
 
 // Mock API calls
 jest.mock("../../apicalls/users", () => ({ 
