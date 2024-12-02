@@ -110,7 +110,7 @@ describe("UserProfileHistoryPage", () => {
     // Check if the download function is called with the correct URL
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("http://localhost:4000/photo/proxy")
+        expect.stringContaining("undefined/photo/proxy?url=http%3A%2F%2Fexample.com%2Fphoto1.jpg")
       );
     });
   });
