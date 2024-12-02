@@ -64,7 +64,8 @@ const UserProfileHistoryPage = () => {
         }
     
         try {
-            const proxyUrl = `http://localhost:4000/photo/proxy?url=${encodeURIComponent(photo.url)}`;
+            // const proxyUrl = `http://localhost:4000/photo/proxy?url=${encodeURIComponent(photo.url)}`;
+            const proxyUrl = process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL + "/photo/proxy?url=" + encodeURIComponent(photo.url);
             const response = await fetch(proxyUrl);
     
             if (!response.ok) {
