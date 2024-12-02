@@ -18,7 +18,7 @@ const SignUp = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { setUser } = useContext(UserContext); 
+  const { setUser } = useContext(UserContext);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -40,6 +40,9 @@ const SignUp = () => {
 
       console.log("Account created successfully:", newUserData);
       // Show alert message on successful signup
+      alert(
+        "Account created successfully!"
+      );
       router.push("/landingPage"); // Redirect to login page after signup
     } catch (err) {
       setError("Error creating account. Please try again. Error: " + err);
