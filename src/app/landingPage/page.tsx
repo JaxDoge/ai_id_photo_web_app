@@ -34,7 +34,7 @@ const LandingPage = () => {
               onClick={() => router.push('/signIn')}
               className={styles.signInButton}
             >
-              Sign In
+              Log In
             </button>
             <button 
               onClick={handleSignUp}

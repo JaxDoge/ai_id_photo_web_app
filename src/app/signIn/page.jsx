@@ -62,7 +62,6 @@ const SignIn = () => {
       // Set the user data in context
       setUser(userData);
       // Store the token in local storage
-      localStorage.setItem("authToken", userData.token);
       console.log("Google sign-in successful", userData.token);
       router.push("/landingPage"); // Redirect after sign-in
     } catch (error) {

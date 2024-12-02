@@ -74,13 +74,16 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-
 ## Install Testing Unit Libraries
+
 Install Jest (testing framework) and React Testing Library:
-```
+
+```bash
 npm install --save-dev jest @testing-library/react @testing-library/jest-dom
 ```
+
 If using TypeScript, install types:
-```
-If using TypeScript, install types:
+
+```bash
+npm install --save-dev @types/jest @testing-library/react @testing-library/jest-dom
 ```
