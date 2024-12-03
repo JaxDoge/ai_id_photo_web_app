@@ -4,7 +4,7 @@
 
  .profileContainer {
     display: flex;
-    height: 100vh; /* 调整为适合视窗的高度 */
+    height: 100vh; 
     background-color: #f1f4f7;
 }
 
@@ -91,7 +91,7 @@
 }
 
 .contentBody {
-    padding: 25px; /* 增加内部填充，使内容与边缘保持距离 */
+    padding: 25px; 
 }
 
 .profileInfo {
@@ -132,7 +132,7 @@
 
 .editButton {
     margin-left: auto;
-    padding: 8px 16px; /* 调整按钮的内边距 */
+    padding: 8px 16px; 
     background-color: #3b82f6;
     color: #fff;
     border-radius: 8px;
@@ -155,10 +155,10 @@
 .inputField, .genderSelect {
     width: 100%;
     background-color: #f1f4f7;
-    padding: 10px 12px; /* 统一内边距 */
+    padding: 10px 12px; 
     border-radius: 8px;
     border: 1px solid #d1d5db;
-    font-size: 14px; /* 统一字体大小 */
+    font-size: 14px; 
     transition: border-color 0.2s;
 }
 

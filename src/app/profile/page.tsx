@@ -7,13 +7,18 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import "./profilePage.css";
 import NavigationBar from "../NavigationBar/navigation";
-import { getLoggedInUserDetails, updateUser, signoutUser} from "../apicalls/users"; // Adjusted import path
+import { getLoggedInUserDetails, updateUser, signoutUser } from "../apicalls/users"; // Adjusted import path
 
 export default function ProfilePage() {
-    // const BASE_API = process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL || "http://localhost:4000";
     const router = useRouter();
+
+    // State to manage the current date
     const [currentDate, setCurrentDate] = useState("");
+
+    // State to toggle editing mode
     const [isEditing, setIsEditing] = useState(false);
+
+    // User data fetched from the backend
     const [userData, setUserData] = useState({
         firstName: "",
         lastName: "",
@@ -23,6 +28,7 @@ export default function ProfilePage() {
         country: ""
     });
 
+    // State for the updated user data during editing
     const [updatedUser, setUpdatedUser] = useState({
         firstName: "",
         lastName: "",
@@ -31,22 +37,20 @@ export default function ProfilePage() {
     });
 
     useEffect(() => {
+        // Fetch and format the current date
         const today = new Date();
         const options: Intl.DateTimeFormatOptions = { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' };
         const formattedDate = today.toLocaleDateString("en-US", options);
         setCurrentDate(formattedDate);
 
-        // Fetch user data and photos
+        // Fetch user data from the backend
         const fetchUserData = async () => {
             try {
-                // Get user details
                 const response = await getLoggedInUserDetails();
                 if (response.success) {
                     const user = response.data;
-                    setUserData(prevData => ({
-                        ...prevData,
-                        ...user
-                    }));
+                    // Set user data and prepare for editing
+                    setUserData(prevData => ({ ...prevData, ...user }));
                     setUpdatedUser({
                         firstName: user.firstName || "",
                         lastName: user.lastName || "",
@@ -57,7 +61,7 @@ export default function ProfilePage() {
                     console.error("Failed to fetch user details:", response.message);
                 }
             } catch (error) {
-                console.error("Failed to fetch user details or photos:", error);
+                console.error("Error fetching user details:", error);
             }
         };
 
@@ -65,36 +69,34 @@ export default function ProfilePage() {
     }, []);
 
     const handleEditClick = () => {
+        // Toggle between Edit and Save modes
         if (isEditing) {
-            // Save changes
-            handleSave();
+            handleSave(); // Save changes
         } else {
-            setIsEditing(true);
+            setIsEditing(true); // Enable editing
         }
     };
 
     const handleCancel = () => {
-        // Reset updatedUser to current userData values
+        // Reset updatedUser to the original user data
         setUpdatedUser({
             firstName: userData.firstName || "",
             lastName: userData.lastName || "",
             gender: userData.gender || "",
             country: userData.country || "",
         });
-        setIsEditing(false);
+        setIsEditing(false); // Exit editing mode
     };
 
     const handleSave = async () => {
         try {
+            // Save updated user data to the backend
             const response = await updateUser(updatedUser);
             if (response.success) {
                 console.log("User updated successfully:", response);
-                // Update userData with the new information
-                setUserData(prevData => ({
-                    ...prevData,
-                    ...updatedUser
-                }));
-                setIsEditing(false);
+                // Reflect changes in the user data
+                setUserData(prevData => ({ ...prevData, ...updatedUser }));
+                setIsEditing(false); // Exit editing mode
             } else {
                 console.error("Failed to update user:", response.message);
                 alert("Failed to update profile. Please try again.");
@@ -106,27 +108,35 @@ export default function ProfilePage() {
     };
 
     const handleSignout = () => {
+        // Sign out the user and redirect to the login page
         signoutUser();
         router.push("/signIn");
     }
 
     return (
         <div className="profileContainer">
+            {/* Navigation Bar with routing */}
             <NavigationBar />
+
             <main className="mainContent">
+                {/* Welcome Header */}
                 <header className="pageHeader">
                     <h1 className="welcomeMessage">Welcome, {userData.firstName || "User"}</h1>
                     <p className="date">{currentDate}</p>
                 </header>
+
+                {/* Profile Information Section */}
                 <div className="middleSection">
                     <div className="colorBar"></div>
                     <div className="contentBody">
                         <div className="profileInfo">
+                            {/* User Profile Image */}
                             <img
-                                src={"/images/avatar-default.png"}
+                                src={"/images/avatar-default.png"} // Placeholder image
                                 alt="Profile"
                                 className="profileImage"
                             />
+                            {/* User Information */}
                             <div className="userInfo">
                                 <h2 className="profileName">
                                     {userData.firstName} {userData.lastName}
@@ -135,6 +145,7 @@ export default function ProfilePage() {
                                     {userData.email || "user@example.com"}
                                 </Link>
                             </div>
+                            {/* Edit and Cancel Buttons */}
                             <button className="editButton" onClick={handleEditClick}>
                                 {isEditing ? "Save" : "Edit"}
                             </button>
@@ -145,6 +156,7 @@ export default function ProfilePage() {
                             )}
                         </div>
 
+                        {/* Editable Fields */}
                         <div className="editFields">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
@@ -157,7 +169,7 @@ export default function ProfilePage() {
                                         onChange={(e) =>
                                             setUpdatedUser({ ...updatedUser, firstName: e.target.value })
                                         }
-                                        disabled={!isEditing}
+                                        disabled={!isEditing} // Disable input unless editing
                                     />
                                 </div>
                                 <div>
@@ -170,7 +182,7 @@ export default function ProfilePage() {
                                         onChange={(e) =>
                                             setUpdatedUser({ ...updatedUser, lastName: e.target.value })
                                         }
-                                        disabled={!isEditing}
+                                        disabled={!isEditing} // Disable input unless editing
                                     />
                                 </div>
                                 <div>
@@ -182,7 +194,7 @@ export default function ProfilePage() {
                                         onChange={(e) =>
                                             setUpdatedUser({ ...updatedUser, gender: e.target.value })
                                         }
-                                        disabled={!isEditing}
+                                        disabled={!isEditing} // Disable input unless editing
                                     >
                                         <option value="">Select Gender</option>
                                         <option value="Male">Male</option>
@@ -201,7 +213,7 @@ export default function ProfilePage() {
                                         onChange={(e) =>
                                             setUpdatedUser({ ...updatedUser, country: e.target.value })
                                         }
-                                        disabled={!isEditing}
+                                        disabled={!isEditing} // Disable input unless editing
                                     />
                                 </div>
                                 <div className="col-span-2">
@@ -211,13 +223,15 @@ export default function ProfilePage() {
                                         placeholder="Your Email Address"
                                         className="inputField"
                                         value={userData.email}
-                                        disabled
+                                        disabled // Email is always non-editable
                                     />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {/* Signout Button */}
                 <button className="signout" onClick={handleSignout}>
                     <p>Signout</p>
                 </button>
