@@ -15,7 +15,7 @@ const SignIn = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const { setUser } = useContext(UserContext); 
+  const { setUser } = useContext(UserContext);
 
   useEffect(() => {
     // Check if an email is saved in localStorage and pre-fill the input if so
@@ -32,7 +32,7 @@ const SignIn = () => {
 
     try {
       const userData = await signInUser(email, password);
-      const token = userData.data; 
+      const token = userData.data;
       console.log("Token received from backend:", token);
       // Set the user data in context
       setUser(userData.data);
@@ -151,10 +151,25 @@ const SignIn = () => {
                 />{" "}
                 Remember me
               </label>
+              <p className={styles.forgotPasswordLink}>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push("/forgotPassword");
+                  }}
+                >
+                  Forgot Password?
+                </a>
+              </p>
             </div>
 
             {error && <p className={styles.error}>{error}</p>}
-            <button data-testid="login-button" type="submit" className={styles.loginButton}>
+            <button
+              data-testid="login-button"
+              type="submit"
+              className={styles.loginButton}
+            >
               Login
             </button>
           </form>

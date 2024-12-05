@@ -9,6 +9,7 @@ import UserProfileHistoryPage from "./history/page";
 import Navigation from "./NavigationBar/navigation";
 import { UserProvider } from "../contexts/UserContext";
 import LandingPage from "./landingPage/page";
+import ResetPassword from "./resetPassword/page";
 
 const Page = () => {
   const pathname = usePathname();
@@ -43,6 +44,8 @@ const Page = () => {
           );
         case "/signIn":
           return <SignIn />;
+        case "/resetPassword":
+          return <ResetPassword />;
         default:
           return <LandingPage />;
       }

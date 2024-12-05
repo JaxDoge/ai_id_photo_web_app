@@ -16,7 +16,7 @@ export const signInUser = async (email, password) => {
 
     // the backend returns the token in response.data.token
     const token = response.data.token;
-    
+
     // Store token in both cookie and localStorage
     document.cookie = `authToken=${token}; path=/; max-age=2592000`; // 30 days
     localStorage.setItem("authToken", token);
@@ -83,11 +83,11 @@ export const googleSignIn = async (idToken) => {
     });
     // the backend returns the token in response.data.token
     const token = response.data.token;
-    
+
     // Store token in both cookie and localStorage
     document.cookie = `authToken=${token}; path=/; max-age=2592000`; // 30 days
     localStorage.setItem("authToken", token);
-    
+
     return response.data;
   } catch (error) {
     console.error("Error during Google Sign-In:", error);
@@ -117,8 +117,34 @@ export const updateUser = async (userData) => {
   }
 };
 
-export const signoutUser = async() => {
+export const signoutUser = async () => {
   localStorage.removeItem("authToken");
   document.cookie = "authToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
   console.log("Sign out successfully");
+};
+
+export const requestPasswordReset = async (email) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/users/forgot-password`, {
+      email,
+    });
+    return { success: true, message: "Password reset email sent!" };
+  } catch (err) {
+    throw new Error(err.response?.data?.error || "Failed to send reset email");
+  }
+};
+
+export const resetPassword = async (token, newPassword) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/users/reset-password`, {
+      token,
+      newPassword,
+    });
+    return (
+      response.data.message ||
+      "Password reset successfully! Redirecting to login..."
+    );
+  } catch (error) {
+    throw new Error(error.response?.data?.error || "Failed to reset password");
+  }
 };
