@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./ResetPassword.module.css";
 import { resetPassword } from "../apicalls/users";
 
-const ResetPassword = () => {
+// Create a wrapper component that uses useSearchParams
+const ResetPasswordForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -64,6 +65,15 @@ const ResetPassword = () => {
         </form>
       </div>
     </div>
+  );
+};
+
+// Main component wrapped in Suspense
+const ResetPassword = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 };
 

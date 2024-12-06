@@ -125,7 +125,7 @@ export const signoutUser = async () => {
 
 export const requestPasswordReset = async (email) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/users/forgot-password`, {
+    await axios.post(`${API_BASE_URL}/users/forgot-password`, {
       email,
     });
     return { success: true, message: "Password reset email sent!" };
