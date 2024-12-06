@@ -20,7 +20,7 @@ const AboutPage = () => {
         <div className={styles.content}>
           <section>
             <h2>Our Mission</h2>
-            <p>At AI ID Photo, we're revolutionizing the way people obtain ID photos. Our mission is to make professional-quality ID photographs accessible to everyone, anywhere, at any time.</p>
+            <p>At AI ID Photo, we&apos;re revolutionizing the way people obtain ID photos. Our mission is to make professional-quality ID photographs accessible to everyone, anywhere, at any time.</p>
           </section>
 
           <section>
