@@ -72,6 +72,28 @@ const LandingPage = () => {
           />
         </div>
       </main>
+
+      <footer className={styles.footer}>
+        <div className={styles.footerContent}>
+          <div className={styles.footerSection}>
+            <h4>AI ID Photo</h4>
+            <p>Create professional ID photos instantly</p>
+          </div>
+          <div className={styles.footerSection}>
+            <h4>Quick Links</h4>
+            <a href="/about">About Us</a>
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/terms">Terms of Service</a>
+          </div>
+          <div className={styles.footerSection}>
+            <h4>Contact</h4>
+            <p>support@aiidphoto.com</p>
+          </div>
+        </div>
+        <div className={styles.footerBottom}>
+          <p>&copy; {new Date().getFullYear()} AI ID Photo. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 };

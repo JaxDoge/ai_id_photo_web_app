@@ -1,6 +1,7 @@
 .container {
     min-height: 100vh;
-    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
   }
   
   .nav {
@@ -118,4 +119,47 @@
     .heroImage {
       order: -1;
     }
+  }
+  
+  .footer {
+    background-color: #f5f5f5;
+    padding: 3rem 2rem 1rem;
+    margin-top: auto;
+  }
+  
+  .footerContent {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+  
+  .footerSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .footerSection h4 {
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  
+  .footerSection a {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  
+  .footerSection a:hover {
+    color: #000;
+  }
+  
+  .footerBottom {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ddd;
+    text-align: center;
+    color: #666;
   }
