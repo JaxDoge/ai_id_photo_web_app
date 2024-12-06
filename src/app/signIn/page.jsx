@@ -2,7 +2,11 @@
 
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
-import { signInUser, googleSignIn } from "../apicalls/users";
+import {
+  signInUser,
+  googleSignIn,
+  verifyTwoFactorCode,
+} from "../apicalls/users";
 import { UserContext } from "../../contexts/UserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
@@ -12,9 +16,12 @@ const SignIn = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [signInError, setSignInError] = useState("");
+  const [twoFactorError, setTwoFactorError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [twoFactorCode, setTwoFactorCode] = useState("");
+  const [isTwoFactorPopupVisible, setIsTwoFactorPopupVisible] = useState(false); // Track if in 2FA step
   const { setUser } = useContext(UserContext);
 
   useEffect(() => {
@@ -28,27 +35,47 @@ const SignIn = () => {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    setError("");
+    setSignInError("");
 
     try {
-      const userData = await signInUser(email, password);
-      const token = userData.data;
-      console.log("Token received from backend:", token);
-      // Set the user data in context
-      setUser(userData.data);
+      // Validate email and password
+      await signInUser(email, password);
 
-      // Store the token based on "Remember Me" selection
+      // Move to 2FA step, show the 2FA popup
+      setIsTwoFactorPopupVisible(true);
+    } catch (err) {
+      setSignInError(err.response?.data?.error || "Invalid email or password.");
+    }
+  };
+
+  const handleVerifyTwoFactor = async (e) => {
+    e.preventDefault();
+    setTwoFactorError("");
+
+    try {
+      // Verify the 2FA code
+      const userData = await verifyTwoFactorCode(email, twoFactorCode);
+
+      // Log the token received
+      console.log("Token received after 2FA:", userData.token);
+
+      // Finalize login
+      setUser(userData);
       if (rememberMe) {
         localStorage.setItem("savedEmail", email);
       } else {
         localStorage.removeItem("savedEmail");
       }
-      // handle successful login
       console.log("Signed in successfully:", userData);
-      localStorage.setItem("authToken", userData.data);
-      router.push("/landingPage"); // Redirect to the homepage
+      localStorage.setItem("authToken", userData.token);
+
+      // Success alert and redirect
+      alert("Correct code. Redirecting to landing page...");
+      router.push("/landingPage");
     } catch (err) {
-      setError("Invalid email or password, error: " + err);
+      setTwoFactorError(
+        err.response?.data?.error || "Invalid or expired authentication code."
+      );
     }
   };
 
@@ -108,7 +135,7 @@ const SignIn = () => {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        {/* Left Side - Form */}
+        {/* Login Form */}
         <div className={styles.formSection}>
           <h2 className={styles.formTitle}>Login</h2>
           <p className={styles.formSubtitle}>
@@ -123,6 +150,7 @@ const SignIn = () => {
               className={styles.inputField}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
 
             <label className={styles.inputLabel}>Password</label>
@@ -164,7 +192,7 @@ const SignIn = () => {
               </p>
             </div>
 
-            {error && <p className={styles.error}>{error}</p>}
+            {signInError && <p className={styles.error}>{signInError}</p>}
             <button
               data-testid="login-button"
               type="submit"
@@ -173,6 +201,35 @@ const SignIn = () => {
               Login
             </button>
           </form>
+
+          {/* Two-Factor Authentication Popup */}
+          {isTwoFactorPopupVisible && (
+            <div className={styles.popup}>
+              <div className={styles.popupContent}>
+                <h2 className={styles.authHeader}>Two-Factor Authentication</h2>
+                <form onSubmit={handleVerifyTwoFactor}>
+                  <label className={styles.authCodeLabel}>
+                    Authentication Code
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter the code sent to your email"
+                    className={styles.inputField}
+                    value={twoFactorCode}
+                    onChange={(e) => setTwoFactorCode(e.target.value)}
+                    required
+                  />
+
+                  {twoFactorError && (
+                    <p className={styles.error}>{twoFactorError}</p>
+                  )}
+                  <button type="submit" className={styles.verifyButton}>
+                    Verify Code
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
 
           <p className={styles.signupLink}>
             Don’t have an account?{" "}

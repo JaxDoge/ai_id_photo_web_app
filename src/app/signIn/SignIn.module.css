@@ -175,3 +175,57 @@
   color: #6b7280;
   padding: 0 5px;
 }
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  z-index: 1000;
+  padding: 20px;
+  width: 300px;
+}
+
+.authHeader {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: black;
+
+}
+
+.popupContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.verifyButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #3b82f6;
+  color: #fff;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.verifyButton:hover {
+  background-color: #0056b3;
+}
+
+.authCodeLabel {
+  display: block;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  margin-left: 3px;
+  color: #4b5563;
+  font-size: 14px;
+}

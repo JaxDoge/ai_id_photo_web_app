@@ -4,7 +4,11 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_REACT_APP_BASE_API_URL || "http://localhost:4000";
 
 // Helper function to get the token from localStorage
-const getAuthToken = () => localStorage.getItem("authToken");
+const getAuthToken = () => {
+  const token = localStorage.getItem("authToken");
+  //console.log("Auth Token:", token); // Debug the token
+  return token;
+};
 
 // Function to handle user sign-in
 export const signInUser = async (email, password) => {
@@ -14,13 +18,7 @@ export const signInUser = async (email, password) => {
       password,
     });
 
-    // the backend returns the token in response.data.token
-    const token = response.data.token;
-
-    // Store token in both cookie and localStorage
-    document.cookie = `authToken=${token}; path=/; max-age=2592000`; // 30 days
-    localStorage.setItem("authToken", token);
-
+    // Backend only returns a success message or 2FA requirement, no token now
     return response.data;
   } catch (error) {
     console.error("Error during sign-in:", error);
@@ -68,10 +66,12 @@ export const getLoggedInUserDetails = async () => {
       }
     );
 
-    return response.data; // Return the user's details
+    return response.data;
   } catch (error) {
-    console.error("Error fetching logged-in user details:", error);
-    throw error.response ? error.response.data : error;
+    console.error("Error in getLoggedInUserDetails:", error.response || error);
+    throw new Error(
+      error.response?.data?.error || "Failed to fetch user data."
+    );
   }
 };
 
@@ -146,5 +146,27 @@ export const resetPassword = async (token, newPassword) => {
     );
   } catch (error) {
     throw new Error(error.response?.data?.error || "Failed to reset password");
+  }
+};
+
+export const verifyTwoFactorCode = async (email, code) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/users/verify-2fa-code`, {
+      email,
+      code,
+    });
+
+    // the backend returns the token in response.data.token
+    const token = response.data.token;
+
+    // Store token in both cookie and localStorage
+    document.cookie = `authToken=${token}; path=/; max-age=2592000`; // 30 days
+    localStorage.setItem("authToken", token);
+
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.error || "Failed to verify 2FA code."
+    );
   }
 };
