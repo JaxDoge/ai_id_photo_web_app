@@ -40,11 +40,11 @@ const SignIn = () => {
     setSignInError("");
 
     try {
-      // Validate email and password
-      await signInUser(email, password);
-
       // Move to 2FA step, show the 2FA popup
       setIsTwoFactorPopupVisible(true);
+
+      // Validate email and password
+      await signInUser(email, password);
     } catch (err) {
       setSignInError(err.response?.data?.error || "Invalid email or password.");
     }
