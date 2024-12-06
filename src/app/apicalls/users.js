@@ -36,12 +36,7 @@ export const signUpUser = async (firstName, lastName, email, password) => {
       password,
     });
 
-    // if the backend returns a token on sign-up, store it
-    if (response.data.token) {
-      localStorage.setItem("authToken", response.data.token);
-    }
-
-    return response.data; // Return the new user data or token
+    return response.data;
   } catch (error) {
     console.error("Error during sign-up:", error);
     throw error.response ? error.response.data : error;
