@@ -229,3 +229,55 @@
   color: #4b5563;
   font-size: 14px;
 }
+
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.closeButton {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 5px 10px;
+}
+
+.closeButton:hover {
+  color: #333;
+}
+
+.resendButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #4b5563;
+  color: #fff;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.resendButton:hover:not(:disabled) {
+  background-color: #374151;
+}
+
+.resendDisabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}

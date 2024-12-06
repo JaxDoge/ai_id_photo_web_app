@@ -23,6 +23,8 @@ const SignIn = () => {
   const [twoFactorCode, setTwoFactorCode] = useState("");
   const [isTwoFactorPopupVisible, setIsTwoFactorPopupVisible] = useState(false); // Track if in 2FA step
   const { setUser } = useContext(UserContext);
+  const [canResend, setCanResend] = useState(false);
+  const [resendTimer, setResendTimer] = useState(30);
 
   useEffect(() => {
     // Check if an email is saved in localStorage and pre-fill the input if so
@@ -132,6 +134,54 @@ const SignIn = () => {
     };
   }, []);
 
+  const handleResendCode = async () => {
+    if (!canResend) return;
+    
+    try {
+      await signInUser(email, password);
+      setCanResend(false);
+      let timeLeft = 30; // 30 seconds cooldown
+      setResendTimer(timeLeft);
+      
+      const timer = setInterval(() => {
+        timeLeft -= 1;
+        setResendTimer(timeLeft);
+        
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          setCanResend(true);
+        }
+      }, 1000);
+    } catch (err) {
+      setSignInError(err.response?.data?.error || "Failed to resend code.");
+    }
+  };
+
+  const handleClosePopup = () => {
+    setIsTwoFactorPopupVisible(false);
+    setTwoFactorCode("");
+    setTwoFactorError("");
+  };
+
+  useEffect(() => {
+    if (isTwoFactorPopupVisible) {
+      let timeLeft = 30;
+      setResendTimer(timeLeft);
+      
+      const timer = setInterval(() => {
+        timeLeft -= 1;
+        setResendTimer(timeLeft);
+        
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          setCanResend(true);
+        }
+      }, 1000);
+
+      return () => clearInterval(timer); // Cleanup on unmount
+    }
+  }, [isTwoFactorPopupVisible]);
+
   return (
     <div className={styles.container}>
       <div className={styles.card}>
@@ -204,29 +254,40 @@ const SignIn = () => {
 
           {/* Two-Factor Authentication Popup */}
           {isTwoFactorPopupVisible && (
-            <div className={styles.popup}>
-              <div className={styles.popupContent}>
-                <h2 className={styles.authHeader}>Two-Factor Authentication</h2>
-                <form onSubmit={handleVerifyTwoFactor}>
-                  <label className={styles.authCodeLabel}>
-                    Authentication Code
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Enter the code sent to your email"
-                    className={styles.inputField}
-                    value={twoFactorCode}
-                    onChange={(e) => setTwoFactorCode(e.target.value)}
-                    required
-                  />
+            <div className={styles.popupOverlay}>
+              <div className={styles.popup}>
+                <div className={styles.popupContent}>
+                  <button onClick={handleClosePopup} className={styles.closeButton}>×</button>
+                  <h2 className={styles.authHeader}>Two-Factor Authentication</h2>
+                  <form onSubmit={handleVerifyTwoFactor}>
+                    <label className={styles.authCodeLabel}>
+                      Authentication Code
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter the code sent to your email"
+                      className={styles.inputField}
+                      value={twoFactorCode}
+                      onChange={(e) => setTwoFactorCode(e.target.value)}
+                      required
+                    />
 
-                  {twoFactorError && (
-                    <p className={styles.error}>{twoFactorError}</p>
-                  )}
-                  <button type="submit" className={styles.verifyButton}>
-                    Verify Code
-                  </button>
-                </form>
+                    {twoFactorError && (
+                      <p className={styles.error}>{twoFactorError}</p>
+                    )}
+                    <button type="submit" className={styles.verifyButton}>
+                      Verify Code
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleResendCode}
+                      className={`${styles.resendButton} ${!canResend ? styles.resendDisabled : ''}`}
+                      disabled={!canResend}
+                    >
+                      {canResend ? 'Resend Code' : `Resend in ${resendTimer}s`}
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
           )}
