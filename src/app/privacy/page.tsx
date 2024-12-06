@@ -30,7 +30,7 @@ const PrivacyPage = () => {
 
           <section>
             <h2>Data Storage and Security</h2>
-            <p>We implement appropriate security measures to protect your personal information. Your photos are automatically deleted from our servers after processing unless you choose to save them in your account.</p>
+            <p>We implement appropriate security measures to protect your personal information. You can delete your photos at any time.</p>
           </section>
 
           <section>
