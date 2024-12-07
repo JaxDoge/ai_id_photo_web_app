@@ -4,7 +4,7 @@ import "./historyPage.css";
 import React, { useState, useEffect } from "react";
 import Link from 'next/link';
 import { getLoggedInUserDetails } from "../apicalls/users";
-import { fetchHistoryPhotosById } from "../apicalls/history"; 
+import { fetchHistoryPhotosById, deletePhotoByURL } from "../apicalls/history"; 
 import NavigationBar from "../NavigationBar/navigation";
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -130,10 +130,40 @@ const UserProfileHistoryPage = () => {
             // Generate the ZIP file and download it
             const content = await zip.generateAsync({ type: "blob" });
             saveAs(content, "photos.zip");
-            alert("All images downloaded successfully!");
+            alert("Are you sure you want to download all images?");
         } catch (error) {
             console.error("Error generating ZIP file:", error);
             alert("An error occurred while downloading images.");
+        }
+    };
+
+    // Handle Deletion of a photo
+    const handleDeletePhoto = async (index) => {
+        const photo = photos[index];
+        if (!photo || !photo.url) {
+            alert("Photo URL is missing");
+            return;
+        } else if (!confirm("Are you sure you want to delete this photo?")) {
+            return;
+        }
+        try {
+            const response = await deletePhotoByURL(photo); // Call API to delete photo
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+    
+            const result = await response.json();
+            if (result.success) {
+                alert("Photo deleted successfully");
+                setPhotos((prevPhotos) =>
+                    prevPhotos.filter((_, photoIndex) => photoIndex !== index)
+                );
+            } else {
+                alert(result.message || "Failed to delete photo");
+            }
+        } catch (error) {
+            console.error("Error deleting photo:", error);
+            alert("An error occurred while deleting the photo.");
         }
     };
 
@@ -223,8 +253,15 @@ const UserProfileHistoryPage = () => {
                                                     e.target.src = "https://i0.wp.com/chemmatcars.uchicago.edu/wp-content/uploads/2021/03/default-placeholder-image-1024x1024-1.png?ssl=1";
                                                 }}
                                             />
-
                                             <div className="overlay">
+                                                <i
+                                                    className="fas fa-times close-icon"
+                                                    style={{ position: "absolute", top: "5px", left: "5px" }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDeletePhoto(index);
+                                                    }}
+                                                />
                                                 <i
                                                     className="fas fa-download faDownload"
                                                     onClick={(e) => {

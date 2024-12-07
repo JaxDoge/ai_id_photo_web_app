@@ -23,21 +23,23 @@ export const fetchHistoryPhotosById = async () => {
     }
 };
 
-export const fetchPhotoById = async () => {
+// Deleting a photo
+export const deletePhotoByURL = async (photo) => {
     try {
         const token = getAuthToken();
         if (!token) {
             throw new Error("No authentication token found");
         }
-        const response = await axios.get(`${API_BASE_URL}/users/get-single-photo`, {
+        const deleteUrl = API_BASE_URL + "/users/delete-single-photo?url=" + encodeURIComponent(photo.url);
+        const response = await axios.delete(deleteUrl, {
             headers: {
                 Authorization: `Bearer ${token}`, // Attach JWT token in Authorization header
             },
         });
-        console.log("Fetched photo by ID:", response.data);
-        return response.data;
+        console.log("Deleted photo by URL:", response.data);
+        return response.data.photo;
     } catch (error) {
-        console.error("Error fetching photo by ID:", error);
+        console.error("Error deleting photo by URL:", error);
         throw error.response ? error.response.data : error;
     }
-};
+}

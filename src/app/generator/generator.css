@@ -17,3 +17,37 @@
     margin-right: auto;
     row-gap: 1.5rem;
 }
+
+.topSection {
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.welcomeMessage {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.date {
+    font-size: 14px;
+    color: #888;
+}
+
+.middleSection {
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    justify-content: center;
+}
+
+.colorBar {
+    height: 50px;
+    background: linear-gradient(to right, #b2d0f7, #eae6ff, #fef6e4);
+}
+
+.contentBody {
+    padding: 20px;
+}
