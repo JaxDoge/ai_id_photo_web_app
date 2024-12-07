@@ -147,12 +147,11 @@ const UserProfileHistoryPage = () => {
             return;
         }
         try {
-            const response = await deletePhotoByURL(photo); // Call API to delete photo
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-    
-            const result = await response.json();
+            // const response = await deletePhotoByURL(photo); // Call API to delete photo
+            // if (!response.ok) {
+            //     throw new Error(`HTTP error! status: ${response.status}`);
+            // }
+            const result = await deletePhotoByURL(photo);
             if (result.success) {
                 alert("Photo deleted successfully");
                 setPhotos((prevPhotos) =>

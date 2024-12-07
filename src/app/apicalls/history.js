@@ -37,7 +37,7 @@ export const deletePhotoByURL = async (photo) => {
             },
         });
         console.log("Deleted photo by URL:", response.data);
-        return response.data.photo;
+        return response.data; // Return the deleted photo data
     } catch (error) {
         console.error("Error deleting photo by URL:", error);
         throw error.response ? error.response.data : error;
